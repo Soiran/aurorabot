@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { db, bot } from '../index';
+import { db, bot } from '../';
 
 
 export default class ClientController {
