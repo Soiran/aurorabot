@@ -12,3 +12,11 @@ export const db = new DBController(`postgres://${config.DB_USER}:${config.DB_PAS
 
 bot.startUpdates();
 db.connect();
+
+/**
+ * Main listener.
+ */
+
+bot.updates.on('message_new', async context => {
+    // ! IMPLEMENT
+});
