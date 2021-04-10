@@ -9,7 +9,7 @@ export default class User {
     public form: FormController;
     public config: ConfigController;
     public client: ClientController;
-    private scene: Scene;
+    public scene: Scene;
 
     
     constructor(id: number) {
@@ -20,6 +20,6 @@ export default class User {
     }
 
     public setScene(scene: Scene) {
-        // ! IMPLEMENT
+        scene.enter(this);
     }
 }

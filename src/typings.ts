@@ -11,7 +11,6 @@ export interface Form {
     id: number,
     name: string,
     age: number,
-    photoid: number[],
     tags: string[],
     description: string,
     city: string,

@@ -18,8 +18,9 @@ export default class VKController {
     }
 
 
-    public async startUpdates() {
+    public async startUpdates(callback?: Function) {
         await this.controller.updates.start();
+        if (callback) callback();
         this.logger.log('Listening to the longpoll updates.', 'info');
     }
 
@@ -61,15 +62,14 @@ export default class VKController {
 
     public async save<T extends Attachment | PhotoAttachment | DocumentAttachment | ExternalAttachment>(peerId: number, attachments: T[]) {
         let dir = __dirname + `\\${peerId}`;
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
         for (let attachment of attachments) {
             if (attachment instanceof PhotoAttachment) {
-                if (!fs.existsSync(dir)) fs.mkdirSync(dir);
                 await download.image({
                     url: attachment.largeSizeUrl,
                     dest: dir
                 });
             } else if (attachment instanceof DocumentAttachment) {
-                if (!fs.existsSync(dir)) fs.mkdirSync(dir);
                 await download.image({
                     url: attachment.url,
                     dest: dir

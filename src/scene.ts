@@ -10,13 +10,22 @@ export default class Scene {
     public data = {};
     public user: User;
     public frames: Frame[];
+    public active = true;
+    public enterCallback: (scene: Scene) => void;
 
 
-    constructor(frames: Frame[]) {
+    constructor(enterCallback: (scene: Scene) => void, frames: Frame[]) {
+        this.enterCallback = enterCallback;
         this.frames = frames;
     }
 
+    public enter(user: User) {
+        this.user = user;
+        this.enterCallback(this);
+    }
+
     public handle(message: MessageContext) {
+        if (!this.active) return;
         this.frames[this.frameIndex](message, this);
     }
 
@@ -30,5 +39,11 @@ export default class Scene {
 
     public goto(index: number) {
         this.frameIndex = index;
+    }
+
+    public end() {
+        this.active = false;
+        // Setting an empty scene
+        this.user.scene = new Scene(scene => {}, []);
     }
 }
