@@ -28,6 +28,6 @@ bot.updates.on('message_new', async context => {
     } else {
         let user = new User(context.peerId);
         users[userId] = user;
-        user.setScene(StartScene);
+        user.setScene(new StartScene());
     }
 });
