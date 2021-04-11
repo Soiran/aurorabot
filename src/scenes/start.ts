@@ -1,7 +1,9 @@
 import Scene from '../scene';
-import { bot } from '../index';
+import { bot, users } from '../index';
 import { Keyboard } from 'vk-io';
-import ProfileView from './profile/view';
+import ProfileViewScene from './profile/view';
+import ProfileCreateScene from './profile/create';
+
 
 export default class StartScene extends Scene {
     constructor() {
@@ -12,18 +14,17 @@ export default class StartScene extends Scene {
                 let exists = await profile.exists();
                 if (exists) {
                     bot.sendMessage({
-                        message: 'Привет, хочешь найти кого-то еще?',
+                        message: 'Привет, хочешь найти кого-нибудь еще?',
                         peer_id: scene.user.id,
                         keyboard: Keyboard.builder().textButton({
                             label: '👍',
                             color: Keyboard.POSITIVE_COLOR
                         })
                     });
-                    user.setScene(ProfileView);
-                    scene.end();
+                    scene.data.created = true;
                 } else {
                     bot.sendMessage({
-                        message: 'Привет, я Аврора, твой помощник в поиске людей. Начнем?',
+                        message: 'Привет, я Аврора, твой помощник в поиске людей. Создадим анкету?',
                         peer_id: scene.user.id,
                         keyboard: Keyboard.builder().textButton({
                             label: '👍',
@@ -34,11 +35,12 @@ export default class StartScene extends Scene {
             },
             [
                 (message, scene) => {
-                    bot.sendMessage({
-                        message: 'Это весь функционал, который имеется на данный момент ;)',
-                        peer_id: scene.user.id,
-                    });
                     scene.end();
+                    if (scene.data.created) {
+                        users[scene.user.id].setScene(new ProfileViewScene());
+                    } else {
+                        users[scene.user.id].setScene(new ProfileCreateScene());
+                    }
                 }
             ]
         );

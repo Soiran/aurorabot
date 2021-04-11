@@ -24,7 +24,7 @@ export default class Scene {
         this.enterCallback(this);
     }
 
-    public handle(message: MessageContext) {
+    public handle(user: User, message: MessageContext) {
         if (!this.active) return;
         this.frames[this.frameIndex](message, this);
     }
