@@ -34,7 +34,7 @@ export default class ClientController {
 
     private static createAccessCode(id: number): number {
         let accessCode = parseInt(Array(6).fill(0).map(() => Math.floor(Math.random() * 10)).join(''));
-        ClientController.accessCodes[accessCode] = id;
+        ClientController.accessCodes[id] = accessCode;
         return accessCode;
     }
 
@@ -49,13 +49,12 @@ export default class ClientController {
         });
     }
 
-    public static async getTokenByAccessCode(accessCode: number): Promise<string | boolean> {
-        let userId = ClientController.accessCodes[accessCode];
-        if (userId) {
-            let token = await new ClientController(userId).getToken();
+    public static async getToken(id: number, accessCode: number): Promise<string | boolean> {
+        if (accessCode === ClientController.accessCodes[id]) {
+            let token = await new ClientController(id).getToken();
             return token;
         } else {
-            delete ClientController.accessCodes[accessCode];
+            delete ClientController.accessCodes[id];
             return false;
         }
     }

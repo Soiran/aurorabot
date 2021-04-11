@@ -36,13 +36,14 @@ export default class DBController {
 
     public async select(fields: string, table: string, condition?: string): Result {
         let response = await this.client.query(`SELECT ${fields} FROM ${table}${condition ? ` WHERE ${condition}` : ''}`);
-        return response;
+        return response.rows;
     }
 
-    public async update(table: string, keyValue: any, condition?: string) {
+    public async update<T>(table: string, keyValue: T, condition?: string, returning?: string) {
         let keys = Object.keys(keyValue);
         let values = keys.map(key => keyValue[key]);
-        console.log(`UPDATE ${table} SET ${keys.map((k, i) => `${k}=\$${i + 1}`)}${condition ? ` WHERE ${condition}` : ''}`);
-        await this.client.query(`UPDATE ${table} SET ${keys.map((k, i) => `${k}=\$${i + 1}`).join(', ')}${condition ? ` WHERE ${condition}` : ''}`, values);
+        let conditionForm = condition ? ` WHERE ${condition}` : '';
+        let returningForm = returning ? ` RETURNING ${returning}` : '';
+        await this.client.query(`UPDATE ${table} SET ${keys.map((k, i) => `${k}=\$${i + 1}`).join(', ')}${conditionForm}${returningForm}`, values);
     }
 }

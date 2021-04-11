@@ -1,25 +1,25 @@
 import Scene from '../scene';
-import FormController from './form.controller';
-import ConfigController from './config.controller';
-import ClientController from './client.controller';
+import ProfileController from './profile.controller';
 
 
 export default class User {
     public id: number;
-    public form: FormController;
-    public config: ConfigController;
-    public client: ClientController;
+    public profile: ProfileController;
     public scene: Scene;
 
     
     constructor(id: number) {
         this.id = id;
-        this.form = new FormController(this.id);
-        this.config = new ConfigController(this.id);
-        this.client = new ClientController(this.id);
+        this.profile = new ProfileController(this.id);
+    }
+
+    public async exists(): Promise<boolean> {
+        let response = await this.profile.exists();
+        return response;
     }
 
     public setScene(scene: Scene) {
+        this.scene = scene;
         scene.enter(this);
     }
 }

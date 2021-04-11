@@ -7,7 +7,7 @@ type Frame = (message: MessageContext, scene: Scene) => void;
 
 export default class Scene {
     public frameIndex = 0;
-    public data = {};
+    public data = {} as any;
     public user: User;
     public frames: Frame[];
     public active = true;
@@ -44,6 +44,6 @@ export default class Scene {
     public end() {
         this.active = false;
         // Setting an empty scene
-        this.user.scene = new Scene(scene => {}, []);
+        delete this.user.scene;
     }
 }
