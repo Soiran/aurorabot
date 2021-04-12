@@ -8,9 +8,11 @@ export declare type Profile = {
     city: string,
     latitude: number,
     longitude: number,
+    photo: boolean,
     likes: number,
     radius: number,
-    gender: number
+    gender: number,
+    searchGender: number
 };
 
 export declare type ProfileRender = {
@@ -31,6 +33,8 @@ export declare type ProfileUpdate = {
     city?: string,
     latitude?: number,
     longitude?: number,
+    photo?: boolean,
     radius?: number,
-    gender?: number
+    gender?: number,
+    searchGender?: number
 };

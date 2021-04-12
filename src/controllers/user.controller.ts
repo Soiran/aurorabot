@@ -20,6 +20,7 @@ export default class User {
 
     public setScene(scene: Scene) {
         this.scene = scene;
-        scene.enter(this);
+        scene.user = this;
+        scene.enterCurrentFrame();
     }
 }

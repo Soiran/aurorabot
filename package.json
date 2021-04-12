@@ -31,8 +31,10 @@
     "image-downloader": "^4.0.2",
     "lodash": "^4.17.20",
     "pg": "^8.5.1",
+    "shelljs": "^0.8.4",
     "stringifier": "^2.1.0",
-    "vk-io": "^4.1.4"
+    "vk-io": "^4.1.4",
+    "xtend": "^4.0.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.12.11",

@@ -6,7 +6,9 @@ import config from '../config';
 import VKController from './controllers/vk.controller';
 import DBController from './controllers/db.controller';
 import User from './controllers/user.controller';
-import StartScene from './scenes/start';
+import { PhotoAttachment } from 'vk-io';
+import { StartScene } from './scenes/start';
+import { CreateScene } from './scenes/profile/create';
 
 
 export let users = {} as any; 
@@ -22,12 +24,15 @@ db.connect();
 
 bot.updates.on('message_new', async context => {
     let userId = context.peerId;
-    if (userId in users) {
-        let user = users[userId];
-        if (user.scene) user.scene.handle(user, context);
-    } else {
-        let user = new User(context.peerId);
+    let user: User = users[userId] || new User(userId);
+    if(!(userId in users)) {
         users[userId] = user;
-        user.setScene(new StartScene());
+        user.setScene(StartScene());
+        return;
+    }
+    if (context.text === 'create') {
+        user.setScene(CreateScene(await user.profile.exists() ? await user.profile.data() : {}));
+    } else {
+        if (user.scene) user.scene.listenMessage(context);
     }
 });

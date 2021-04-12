@@ -2,48 +2,74 @@ import { MessageContext } from 'vk-io';
 import User from './controllers/user.controller';
 
 
-type Frame = (message: MessageContext, scene: Scene) => void;
+type Frame = {
+    listenCallback: (message: MessageContext, scene?: Scene) => void,
+    enterCallback?: (scene: Scene, options?: any) => void
+};
 
 
 export default class Scene {
-    public frameIndex = 0;
-    public data = {} as any;
     public user: User;
     public frames: Frame[];
-    public active = true;
-    public enterCallback: (scene: Scene) => void;
+    public frameIndex: number;
+    public payload: any;
 
 
-    constructor(enterCallback: (scene: Scene) => void, frames: Frame[]) {
-        this.enterCallback = enterCallback;
-        this.frames = frames;
+    constructor(payload?: any, frames?: Frame[]) {
+        frames ? this.frames = frames : this.frames = new Array<Frame>();
+        payload ? this.payload = payload : this.payload = {};
+        this.frameIndex = 0;
     }
 
-    public enter(user: User) {
-        this.user = user;
-        this.enterCallback(this);
+    public get currentFrame(): Frame {
+        return this.frames[this.frameIndex];
     }
 
-    public handle(user: User, message: MessageContext) {
-        if (!this.active) return;
-        this.frames[this.frameIndex](message, this);
+    public enterCurrentFrame(options = null) {
+        let frame = this.currentFrame;
+        if (frame.enterCallback) {
+            frame.enterCallback(this, options);
+        }
     }
 
-    public next() {
+    public ask(questionCallback: Frame['enterCallback'], listenCallback: Frame['listenCallback']) {
+        return new Scene(this.payload, this.frames.concat([{
+            listenCallback: listenCallback,
+            enterCallback: questionCallback
+        }]));
+    }
+
+    public listen(listenCallback: Frame['listenCallback']) {
+        return new Scene(this.payload, this.frames.concat([{
+            listenCallback: listenCallback
+        }]));
+    }
+
+    public listenMessage(message: MessageContext) {
+        this.frames[this.frameIndex].listenCallback(message, this);
+    }
+
+    public next(options = null) {
         this.frameIndex++;
+        this.enterCurrentFrame(options);
     }
 
-    public back() {
+    public back(options = null) {
         this.frameIndex--;
+        this.enterCurrentFrame(options);
     }
 
-    public goto(index: number) {
+    public goto(index: number, options = null) {
         this.frameIndex = index;
+        this.enterCurrentFrame(options);
     }
 
-    public end() {
-        this.active = false;
-        // Setting an empty scene
-        delete this.user.scene;
+    public shift(count: number, options = null) {
+        this.frameIndex += count;
+        this.enterCurrentFrame(options);
+    }
+
+    public retry(options = null) {
+        this.enterCurrentFrame(options);
     }
 }
