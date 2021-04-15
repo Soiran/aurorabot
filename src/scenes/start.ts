@@ -1,8 +1,8 @@
 import Scene from '../scene';
 import { bot, users } from '../index';
 import { Keyboard } from 'vk-io';
-import ProfileViewScene from './profile/view';
-import { CreateScene } from './profile/create';
+import { ProfileCreateScene } from './profile/create';
+import { ProfileViewScene } from './profile/view';
 
 
 export const StartScene = (payload = null) => {
@@ -34,9 +34,9 @@ export const StartScene = (payload = null) => {
         },
         (message, scene) => {
             if (scene.payload.created) {
-                users[scene.user.id].setScene(new ProfileViewScene());
+                users[scene.user.id].setScene(ProfileViewScene());
             } else {
-                users[scene.user.id].setScene(CreateScene());
+                users[scene.user.id].setScene(ProfileCreateScene());
             }
         }
     );

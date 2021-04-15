@@ -14,7 +14,7 @@ export default class Logger {
         this.alias = alias;
     }
 
-    log(message: any, type: 'info' | 'warn' | 'error' | 'success') {
+    log(message: any, type?: 'info' | 'warn' | 'error' | 'success') {
         if (typeof message !== 'string') {
             message = stringify.stringify(message, {
                 intend: '    ',
@@ -22,7 +22,7 @@ export default class Logger {
             });
         }
         let time: string = timeFormat(new Date()).gray;
-        let alias: string = this.alias.bgBlue;
+        let alias: string = this.alias.bgWhite.black;
         if (type) {
             switch (type) {
                 case 'info':

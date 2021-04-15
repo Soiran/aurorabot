@@ -12,7 +12,9 @@ export default class VKController {
 
     constructor(token: string) {
         this.controller = new VK({
-            token: token
+            token: token,
+            apiRequestMode: 'burst',
+            apiMode: 'parallel'
         });
         this.logger = new Logger('VKController');
     }
@@ -31,8 +33,8 @@ export default class VKController {
     }
 
     public async uploadPhoto(peerId: number, value: UploadSourceValue): Promise<PhotoAttachment> {
-        let attachment = this.controller.upload.messagePhoto({
-            peer_id: peerId,
+        let attachment = await this.controller.upload.messagePhoto({
+            peer_id: 0,
             source: {
                 value: value
             }
@@ -41,7 +43,7 @@ export default class VKController {
     }
 
     public async uploadDocument(peerId: number, value: UploadSourceValue): Promise<DocumentAttachment> {
-        let attachment = this.controller.upload.messageDocument({
+        let attachment = await this.controller.upload.messageDocument({
             peer_id: peerId,
             source: {
                 value: value
@@ -80,6 +82,10 @@ export default class VKController {
 
     public get api() {
         return this.controller.api;
+    }
+
+    public get upload() {
+        return this.controller.upload;
     }
 
     public get updates() {

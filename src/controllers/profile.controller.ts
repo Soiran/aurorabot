@@ -30,7 +30,7 @@ export default class ProfileController {
             _distanceDeclination = _distanceLastNumber === 1 ? 'метр' : (_distanceLastNumber >= 5 || _distanceLastNumber === 0 ? 'метров' : 'метра');
         }
         let renderString = new String();
-        renderString += `${gender ? '🙍‍♀' : (gender > 1 ? '🏳️' : '🙍‍♂')} ${name}, ${age} ${_ageDeclination}, ${distance ? `${distance} ${_distanceDeclination} от тебя` : city}\n`;
+        renderString += `${gender ? (gender > 1 ? '🏳️' : '🙍‍') : '🙍‍♂‍'} ${name}, ${age} ${_ageDeclination}, ${distance ? `${distance} ${_distanceDeclination} от тебя` : city}\n`;
         renderString += `${description}\n`;
         renderString += tags.map(t => '#' + t).join(', ');
         return renderString;
@@ -76,22 +76,10 @@ export default class ProfileController {
         }, `id = ${this.id}`);
     }
 
-    public async togglePhoto(photo: boolean) {
+    public async togglePhoto(photoId: string) {
         await db.update<ProfileUpdate>('profile', {
-            photo: photo
+            photoid: photoId
         }, `id = ${this.id}`);
-    }
-
-    public async deletePhoto() {
-        let directory = `${config.sourceDir}\\db\\photos\\${this.id}`;
-        fs.readdir(directory, (err, files) => {
-            if (err) throw err;
-            for (let file of files) {
-                fs.unlink(path.join(directory, file), err => {
-                    if (err) throw err;
-                });
-            }
-        });
     }
 
     public async setTags(tags: string[]) {

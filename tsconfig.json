@@ -3,6 +3,7 @@
         "lib": [ "dom", "ES2017" ],
         "target": "ESNext",
         "moduleResolution": "node",
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "experimentalDecorators": true
     }
 }

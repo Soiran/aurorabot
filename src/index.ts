@@ -8,7 +8,8 @@ import DBController from './controllers/db.controller';
 import User from './controllers/user.controller';
 import { PhotoAttachment } from 'vk-io';
 import { StartScene } from './scenes/start';
-import { CreateScene } from './scenes/profile/create';
+import { ProfileCreateScene } from './scenes/profile/create';
+import { ProfileViewScene } from './scenes/profile/view';
 
 
 export let users = {} as any; 
@@ -24,15 +25,11 @@ db.connect();
 
 bot.updates.on('message_new', async context => {
     let userId = context.peerId;
-    let user: User = users[userId] || new User(userId);
-    if(!(userId in users)) {
-        users[userId] = user;
-        user.setScene(StartScene());
-        return;
-    }
-    if (context.text === 'create') {
-        user.setScene(CreateScene(await user.profile.exists() ? await user.profile.data() : {}));
+    let controller: User = users[userId] || new User(userId);
+    if (!users[userId]) {
+        users[userId] = controller;
+        controller.setScene(StartScene());
     } else {
-        if (user.scene) user.scene.listenMessage(context);
+        if (controller.scene) controller.scene.listenMessage(context);
     }
 });

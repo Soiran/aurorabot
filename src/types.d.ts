@@ -8,7 +8,7 @@ export declare type Profile = {
     city: string,
     latitude: number,
     longitude: number,
-    photo: boolean,
+    photoid: string,
     likes: number,
     radius: number,
     gender: number,
@@ -33,7 +33,7 @@ export declare type ProfileUpdate = {
     city?: string,
     latitude?: number,
     longitude?: number,
-    photo?: boolean,
+    photoid?: string,
     radius?: number,
     gender?: number,
     searchGender?: number

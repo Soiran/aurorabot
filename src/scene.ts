@@ -72,4 +72,8 @@ export default class Scene {
     public retry(options = null) {
         this.enterCurrentFrame(options);
     }
+
+    public end() {
+        this.user.scene = null;
+    }
 }

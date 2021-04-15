@@ -1,16 +1,16 @@
 import * as download from 'image-downloader';
 import * as shell from 'shelljs';
 import Scene from '../../scene';
-import ProfileViewScene from './view';
+import { ProfileViewScene } from './view';
 import config from '../../../config';
-import { bot } from '../../index';
+import { bot, users } from '../../index';
 import { Keyboard, PhotoAttachment } from 'vk-io';
 import { Profile, ProfileRender } from '../../types';
 import User from '../../controllers/user.controller';
 import ProfileController from '../../controllers/profile.controller';
 
 
-export const CreateScene = (payload = null) => {
+export const ProfileCreateScene = (payload = null) => {
     return new Scene(payload).ask(
         async (scene, options) => {
             let response = await bot.api.users.get({
@@ -177,7 +177,7 @@ export const CreateScene = (payload = null) => {
         },
         (message, scene) => {
             let searchGender = message.messagePayload?.searchGender;
-            if (!searchGender) {
+            if (searchGender === undefined) {
                 scene.retry({
                     phrase: 'Пожалуйста, укажи того, кого хочешь найти.'
                 });
@@ -299,8 +299,7 @@ export const CreateScene = (payload = null) => {
             let photos: any[] = message.attachments.filter(a => a instanceof PhotoAttachment);
             let payload = message.messagePayload;
             let controller = new User(scene.user.id);
-            let photoDir = `${config.sourceDir}\\db\\photos\\${scene.user.id}`;
-            shell.mkdir('-p', photoDir);
+            let photoUrl: string;
             if (payload?.import) {
                 const [ response ] = await bot.api.users.get({
                     user_id: scene.user.id,
@@ -311,15 +310,7 @@ export const CreateScene = (payload = null) => {
                         phrase: 'Упс... На данный момент у твоего профиля нет фото, поэтому лучше отправить фото сообщением.'
                     });
                 } else {
-                    scene.payload.photo = true;
-                    await controller.profile.deletePhoto();
-                    let photoUrl = response.photo_max_orig;
-                    message.send('Загружаем фотографию...');
-                    await download.image({
-                        url: photoUrl,
-                        dest: photoDir,
-                        dir: photoDir
-                    });
+                    photoUrl = response.photo_max_orig;
                 }
             } else {
                 if (!photos.length) {
@@ -330,14 +321,17 @@ export const CreateScene = (payload = null) => {
                         return;
                     }
                 } else {
-                    scene.payload.photo = true;
-                    message.send('Загружаем фотографию...');
-                    await download.image({
-                        url: photos[0].largeSizeUrl,
-                        dest: photoDir,
-                        dir: photoDir
-                    });
+                    photoUrl = photos[0].largeSizeUrl;
                 }
+            }
+            if (photoUrl) {
+                let attachment: PhotoAttachment = await bot.upload.messagePhoto({
+                    peer_id: 0,
+                    source: {
+                        value: photoUrl
+                    }
+                });
+                scene.payload.photoId = attachment.toString();
             }
             message.send('Сохраняем твою анкету...');
             let profile: Profile = {
@@ -348,20 +342,17 @@ export const CreateScene = (payload = null) => {
                 tags: scene.payload.tags,
                 description: scene.payload.description,
                 city: scene.payload.geo?.place?.city || 'Мир',
-                latitude: scene.payload.geo.latitude,
-                longitude: scene.payload.geo.longitude,
-                photo: scene.payload.photo,
+                latitude: scene.payload.geo?.coordinates?.latitude,
+                longitude: scene.payload.geo?.coordinates?.longitude,
+                photoid: scene.payload.photoId,
                 likes: scene.payload.likes || 0,
                 radius: scene.payload.radius || 100000,
                 gender: scene.payload.gender,
                 searchGender: scene.payload.searchGender
             };
             await controller.profile.init(profile);
-            message.send('Готово!');
-            let photo = await bot.uploadFolder(scene.user.id, photoDir);
-            message.send(ProfileController.profileRenderer(profile as ProfileRender), {
-                attachment: photo
-            });
+            scene.end();
+            users[scene.user.id].setScene(ProfileViewScene());
         }
     );
 }
