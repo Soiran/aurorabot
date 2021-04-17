@@ -2,11 +2,16 @@ import Scene from '../scene';
 import { bot, users } from '../index';
 import { Keyboard } from 'vk-io';
 import { ProfileCreateScene } from './profile/create';
-import { ProfileViewScene } from './profile/view';
+import { ProfileMainScene } from './profile/main';
+import Frame from '../frame';
 
 
-export const StartScene = (payload = null) => {
-    return new Scene(payload).ask(
+/**
+ * Эта сцена используется как роутинг в случае, если: пользователь впервые пишет
+ * боту, пользователь не активен больше двух недель или бот был перезапущен.
+ */
+export const StartScene = (payload?) => {
+    return new Scene(payload).add(new Frame(
         async scene => {
             let user = scene.user;
             let profile = user.profile;
@@ -34,10 +39,10 @@ export const StartScene = (payload = null) => {
         },
         (message, scene) => {
             if (scene.payload.created) {
-                users[scene.user.id].setScene(ProfileViewScene());
+                users[scene.user.id].setScene(ProfileMainScene());
             } else {
                 users[scene.user.id].setScene(ProfileCreateScene());
             }
         }
-    );
+    ));
 }

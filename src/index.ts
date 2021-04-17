@@ -6,10 +6,7 @@ import config from '../config';
 import VKController from './controllers/vk.controller';
 import DBController from './controllers/db.controller';
 import User from './controllers/user.controller';
-import { PhotoAttachment } from 'vk-io';
 import { StartScene } from './scenes/start';
-import { ProfileCreateScene } from './scenes/profile/create';
-import { ProfileViewScene } from './scenes/profile/view';
 
 
 export let users = {} as any; 

@@ -1,5 +1,5 @@
-import { Client, Result } from 'pg';
 import Logger from '../utils/cl';
+import { Client, Result } from 'pg';
 
 
 export default class DBController {
@@ -45,5 +45,9 @@ export default class DBController {
         let conditionForm = condition ? ` WHERE ${condition}` : '';
         let returningForm = returning ? ` RETURNING ${returning}` : '';
         await this.client.query(`UPDATE ${table} SET ${keys.map((k, i) => `${k}=\$${i + 1}`).join(', ')}${conditionForm}${returningForm}`, values);
+    }
+
+    public async delete(table: string, condition?: string) {
+        await this.client.query(`DELETE FROM ${table}${condition ? ` WHERE ${condition}` : ''}`);
     }
 }

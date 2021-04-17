@@ -1,8 +1,21 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import config from '../../config';
+import date from '../utils/date';
 import { db } from '..';
 import { Profile, ProfileUpdate, ProfileRender } from '../types';
+
+
+const declineDistance = (distance: number): string => {
+    let s = distance.toString();
+    let l = parseInt(s[s.length - 1]);
+    let w = distance >= 1000 ? 'километр' : 'метр';
+    distance = distance >= 1000 ? Math.round(distance / 1000) : distance;
+    return `${distance} ${l === 1 ? w : (l >= 5 || l === 0 ? w + 'ов' : w + 'а')}`;
+}
+
+const declineAge = (age: number): string => {
+    let s = age.toString();
+    let l = parseInt(s[s.length - 1]);
+    return `${age} ${l === 0 ? 'лет' : (l === 1 ? 'год' : (l < 5 ? 'года' : 'лет'))}`
+}
 
 
 export default class ProfileController {
@@ -13,27 +26,31 @@ export default class ProfileController {
         this.id = id;
     }
 
-    public static profileRenderer(
-        profile: ProfileRender,
-        distance?: number
-    ) {
-        let { name, age, tags, description, city, gender } = profile;
-        let _ageString = age.toString();
-        let _ageLastNumber = parseInt(_ageString[_ageString.length - 1]);
-        let _ageDeclination = _ageLastNumber < 5 ? 'года' : 'лет';
-        let _distanceString: string;
-        let _distanceLastNumber: number;
-        let _distanceDeclination: string;
-        if (distance) {
-            _distanceString = distance.toString();
-            _distanceLastNumber = parseInt(_distanceString[_distanceString.length - 1]);
-            _distanceDeclination = _distanceLastNumber === 1 ? 'метр' : (_distanceLastNumber >= 5 || _distanceLastNumber === 0 ? 'метров' : 'метра');
+    public async render(viewer: ProfileController, distance?: number, revealAnonymous?: boolean) {
+        let viewerData = await viewer.data();
+        let profileData = await this.data() as ProfileRender;
+        let renderString = '';
+        if (viewerData.rank >= 2) {
+            renderString += `Страница: vk.com/id${profileData.id}\n`;
+            renderString += `Первое появление: ${date(profileData.created)}\n`;
+            renderString += `Последняя активность: ${date(profileData.created)}\n`;
+            renderString += `Редактировано: ${date(profileData.created)}\n`;
+            renderString += `Ищет: ${profileData.search_gender ? (profileData.search_gender > 1 ? 'всех' : 'девушек') : 'парней'}\n`;
+            renderString += `Режим поиска: ${profileData.search_mode ? 'глобальный' : 'локальный'}\n`;
+            renderString += `Лайков: ${profileData.likes}\n`;
+            renderString += `Репортов: ${profileData.reports}\n\n`;
         }
-        let renderString = new String();
-        renderString += `${gender ? (gender > 1 ? '🏳️' : '🙍‍') : '🙍‍♂‍'} ${name}, ${age} ${_ageDeclination}, ${distance ? `${distance} ${_distanceDeclination} от тебя` : city}\n`;
-        renderString += `${description}\n`;
-        renderString += tags.map(t => '#' + t).join(', ');
-        return renderString;
+        if (profileData.anonymous && !revealAnonymous) {
+            renderString += `🏴 Аноним\n`;
+        } else {
+            renderString += `${profileData.gender ? (profileData.gender > 1 ? '🏳️' : '🙍‍') : '🙍‍♂‍'} ${profileData.name}, ${declineAge(profileData.age)}, ${distance ? declineDistance(distance) : profileData.city}\n`;
+        }
+        renderString += `${profileData.description}\n`;
+        renderString += profileData.tags.map(t => '#' + t).join(', ');
+        return {
+            text: renderString,
+            photo: profileData.photo_id
+        };
     }
 
     public async exists(): Promise<boolean> {
@@ -43,6 +60,11 @@ export default class ProfileController {
 
     public async init(profile: Profile) {
         await db.insert('profile', profile);
+    }
+
+    public async update(profile: Profile) {
+        await db.delete('profile', `id = ${this.id}`);
+        await this.init(profile);
     }
 
     public async data(): Promise<Profile> {
@@ -55,61 +77,7 @@ export default class ProfileController {
         return response[0].field;
     }
 
-    public async toggleActive(): Promise<boolean> {
-        let active = await db.select('active', 'profile', `id = ${this.id}`);
-        await db.update<ProfileUpdate>('profile', {
-            active: !active
-        }, `id = ${this.id}`);
-        return !active;
+    public async edit(update: ProfileUpdate) {
+        await db.update<ProfileUpdate>('profile', update, `id = ${this.id}`);
     }
-
-    public async setCity(city: string) {
-        await db.update<ProfileUpdate>('profile', {
-            city: city
-        }, `id = ${this.id}`);
-    }
-
-    public async setLocation(latitude: number, longitude: number) {
-        await db.update<ProfileUpdate>('profile', {
-            latitude: latitude,
-            longitude: longitude
-        }, `id = ${this.id}`);
-    }
-
-    public async togglePhoto(photoId: string) {
-        await db.update<ProfileUpdate>('profile', {
-            photoid: photoId
-        }, `id = ${this.id}`);
-    }
-
-    public async setTags(tags: string[]) {
-        await db.update<ProfileUpdate>('profile', {
-            tags: tags
-        }, `id = ${this.id}`);
-    }
-
-    public async setDescription(description: string) {
-        await db.update<ProfileUpdate>('profile', {
-            description: description
-        }, `id = ${this.id}`);
-    }
-
-    public async setGender(gender: number) {
-        await db.update<ProfileUpdate>('profile', {
-            gender: gender
-        }, `id = ${this.id}`);
-    }
-
-    public async setSearchGender(searchGender: number) {
-        await db.update<ProfileUpdate>('profile', {
-            searchGender: searchGender
-        }, `id = ${this.id}`);
-    }
-
-    public async setRadius(radius: number) {
-        await db.update<ProfileUpdate>('profile', {
-            radius: radius
-        }, `id = ${this.id}`);
-    }
-
 };

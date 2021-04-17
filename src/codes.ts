@@ -1,0 +1,15 @@
+export enum Response {
+    VALID,
+    VALID_CITY,
+    VALID_LOCATION,
+    UNKNOWN_LOCATION,
+    NO_VALUE,
+    TOO_LONG,
+    TOO_SHORT,
+    OUT_OF_RANGE,
+    FORBIDDEN_SYMBOLS,
+    UNKNOWN,
+    NOT_FOUND,
+    NOT_VALID,
+    INCORRECT
+};

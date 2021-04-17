@@ -1,11 +1,6 @@
 import { MessageContext } from 'vk-io';
 import User from './controllers/user.controller';
-
-
-type Frame = {
-    listenCallback: (message: MessageContext, scene?: Scene) => void,
-    enterCallback?: (scene: Scene, options?: any) => void
-};
+import Frame from './frame';
 
 
 export default class Scene {
@@ -32,17 +27,8 @@ export default class Scene {
         }
     }
 
-    public ask(questionCallback: Frame['enterCallback'], listenCallback: Frame['listenCallback']) {
-        return new Scene(this.payload, this.frames.concat([{
-            listenCallback: listenCallback,
-            enterCallback: questionCallback
-        }]));
-    }
-
-    public listen(listenCallback: Frame['listenCallback']) {
-        return new Scene(this.payload, this.frames.concat([{
-            listenCallback: listenCallback
-        }]));
+    public add(frame: Frame) {
+        return new Scene(this.payload, this.frames.concat([ frame ]));
     }
 
     public listenMessage(message: MessageContext) {

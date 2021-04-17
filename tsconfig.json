@@ -4,6 +4,11 @@
         "target": "ESNext",
         "moduleResolution": "node",
         "esModuleInterop": true,
-        "experimentalDecorators": true
+        "removeComments": true,
+        "preserveConstEnums": true,
+        //"outFile": "./build/build.js",
+        "sourceRoot": "./src/",
+        "rootDir": "./src/",
+        "sourceMap": true
     }
 }

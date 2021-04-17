@@ -1,8 +1,7 @@
-import * as download from 'image-downloader';
 import * as fs from 'fs';
-import { VK, ExternalAttachment, PhotoAttachment, UploadSourceValue, DocumentAttachment, Attachment } from 'vk-io';
-import { MessagesSendParams } from 'vk-io/lib/api/schemas/params';
 import Logger from '../utils/cl';
+import { VK, PhotoAttachment, UploadSourceValue, DocumentAttachment, Attachment, /*ExternalAttachment*/ } from 'vk-io';
+import { MessagesSendParams } from 'vk-io/lib/api/schemas/params';
 
 
 export default class VKController {
@@ -19,6 +18,17 @@ export default class VKController {
         this.logger = new Logger('VKController');
     }
 
+    public get api() {
+        return this.controller.api;
+    }
+
+    public get upload() {
+        return this.controller.upload;
+    }
+
+    public get updates() {
+        return this.controller.updates;
+    }
 
     public async startUpdates(callback?: Function) {
         await this.controller.updates.start();
@@ -32,7 +42,7 @@ export default class VKController {
         }));
     }
 
-    public async uploadPhoto(peerId: number, value: UploadSourceValue): Promise<PhotoAttachment> {
+    public async uploadPhoto(value: UploadSourceValue): Promise<PhotoAttachment> {
         let attachment = await this.controller.upload.messagePhoto({
             peer_id: 0,
             source: {
@@ -42,9 +52,9 @@ export default class VKController {
         return attachment;
     }
 
-    public async uploadDocument(peerId: number, value: UploadSourceValue): Promise<DocumentAttachment> {
+    public async uploadDocument(value: UploadSourceValue): Promise<DocumentAttachment> {
         let attachment = await this.controller.upload.messageDocument({
-            peer_id: peerId,
+            peer_id: 0,
             source: {
                 value: value
             }
@@ -52,43 +62,21 @@ export default class VKController {
         return attachment;
     }
 
-    public async uploadFolder(peerId: number, path: string) {
-        let filenames = fs.readdirSync(path);
-        let attachments = new Array<Attachment>();
-        for (let file of filenames) {
-            let attachment = await this.uploadPhoto(peerId, `${path}\\${file}`);
-            attachments.push(attachment);
-        }
-        return attachments;
-    }
-
-    public async save<T extends Attachment | PhotoAttachment | DocumentAttachment | ExternalAttachment>(peerId: number, attachments: T[]) {
-        let dir = __dirname + `\\${peerId}`;
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-        for (let attachment of attachments) {
-            if (attachment instanceof PhotoAttachment) {
-                await download.image({
-                    url: attachment.largeSizeUrl,
-                    dest: dir
-                });
-            } else if (attachment instanceof DocumentAttachment) {
-                await download.image({
-                    url: attachment.url,
-                    dest: dir
-                });
-            }
-        }
-    }
-
-    public get api() {
-        return this.controller.api;
-    }
-
-    public get upload() {
-        return this.controller.upload;
-    }
-
-    public get updates() {
-        return this.controller.updates;
-    }
+    // public async save<T extends Attachment | PhotoAttachment | DocumentAttachment | ExternalAttachment>(peerId: number, attachments: T[]) {
+    //     let dir = __dirname + `\\${peerId}`;
+    //     if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    //     for (let attachment of attachments) {
+    //         if (attachment instanceof PhotoAttachment) {
+    //             await download.image({
+    //                 url: attachment.largeSizeUrl,
+    //                 dest: dir
+    //             });
+    //         } else if (attachment instanceof DocumentAttachment) {
+    //             await download.image({
+    //                 url: attachment.url,
+    //                 dest: dir
+    //             });
+    //         }
+    //     }
+    // }
 }
