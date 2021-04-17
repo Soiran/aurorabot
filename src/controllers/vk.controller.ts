@@ -1,7 +1,7 @@
-import * as fs from 'fs';
-import Logger from '../utils/cl';
-import { VK, PhotoAttachment, UploadSourceValue, DocumentAttachment, Attachment, /*ExternalAttachment*/ } from 'vk-io';
+import { DocumentAttachment, PhotoAttachment, UploadSourceValue, VK } from 'vk-io';
 import { MessagesSendParams } from 'vk-io/lib/api/schemas/params';
+
+import Logger from '../utils/cl';
 
 
 export default class VKController {

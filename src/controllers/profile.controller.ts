@@ -1,6 +1,6 @@
-import date from '../utils/date';
 import { db } from '..';
-import { Profile, ProfileUpdate, ProfileRender } from '../types';
+import { Profile, ProfileRender, ProfileUpdate } from '../types';
+import date from '../utils/date';
 
 
 const declineDistance = (distance: number): string => {

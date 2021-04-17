@@ -1,8 +1,8 @@
-import { bot, users } from "../../..";
-import User from "../../../controllers/user.controller";
-import Frame from "../../../frame";
-import { ProfileMainScene } from "../../../scenes/profile/main";
-import { Profile } from "../../../types";
+import { bot, users } from '../../..';
+import User from '../../../controllers/user.controller';
+import Frame from '../../../frame';
+import ProfileMainScene from '../../../scenes/profile/main';
+import { Profile } from '../../../types';
 
 
 export default new Frame(

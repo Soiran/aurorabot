@@ -1,9 +1,10 @@
-import Scene from '../scene';
-import { bot, users } from '../index';
 import { Keyboard } from 'vk-io';
-import { ProfileCreateScene } from './profile/create';
-import { ProfileMainScene } from './profile/main';
+
+import { bot, users } from '..';
 import Frame from '../frame';
+import Scene from '../scene';
+import ProfileCreateScene from './profile/create';
+import ProfileMainScene from './profile/main';
 
 
 /**

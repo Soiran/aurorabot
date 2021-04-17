@@ -1,4 +1,4 @@
-import Scene from '../../scene';
+import Scene from '../../../scene';
 import {
     ageFrame,
     descriptionFrame,
@@ -7,13 +7,13 @@ import {
     nameFrame,
     photoFrame,
     saveFrame,
-    tagsFrame
-} from '../../frames/profile/create';
-import { searchGenderFrame } from '../../frames/search';
+    searchGenderFrame,
+    tagsFrame,
+} from './frames';
 
 
 
-export const ProfileCreateScene = (payload?) => {
+export default function ProfileCreateScene(payload?) {
     return new Scene(payload)
     .add(nameFrame)
     .add(ageFrame)

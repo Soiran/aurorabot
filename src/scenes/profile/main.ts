@@ -1,13 +1,14 @@
-import Scene from '../../scene';
-import User from '../../controllers/user.controller';
-import { bot, users } from '../../index';
 import { Keyboard } from 'vk-io';
-import { ProfileCreateScene } from './create';
+
+import { bot, users } from '../..';
+import User from '../../controllers/user.controller';
 import Frame from '../../frame';
-import { ProfileEditScene } from './edit';
+import Scene from '../../scene';
+import ProfileCreateScene from './create';
+import ProfileEditScene from './edit';
 
 
-export const ProfileMainScene = (payload?) => {
+export default function ProfileMainScene(payload?) {
     return new Scene(payload).add(new Frame(
         async scene => {
             let profileController = await new User(scene.user.id).profile;

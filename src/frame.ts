@@ -1,4 +1,5 @@
 import { MessageContext } from 'vk-io';
+
 import Scene from './scene';
 
 

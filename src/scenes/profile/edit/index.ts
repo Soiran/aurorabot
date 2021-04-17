@@ -1,6 +1,6 @@
-import Scene from '../../scene';
-import User from '../../controllers/user.controller';
-import { bot } from '../../index';
+import Scene from '../../../scene';
+import Frame from '../../../frame';
+import { bot } from '../../../index';
 import { Keyboard } from 'vk-io';
 import {
     ageFrame,
@@ -10,11 +10,10 @@ import {
     nameFrame,
     photoFrame,
     tagsFrame
-} from '../../frames/profile/edit';
-import Frame from '../../frame';
+} from './frames';
 
 
-export const ProfileEditScene = (payload?) => {
+export default function ProfileEditScene(payload?) {
     return new Scene(payload).add(new Frame(
         async scene => {
             bot.sendMessage({

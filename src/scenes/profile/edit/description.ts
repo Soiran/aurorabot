@@ -1,9 +1,9 @@
-import { Keyboard } from "vk-io";
-import { bot, users } from "../../..";
-import { Response } from "../../../codes";
 import User from "../../../controllers/user.controller";
 import Frame from "../../../frame";
 import descriptionValidator from '../../../validators/profile/description';
+import { Keyboard } from "vk-io";
+import { bot, users } from "../../..";
+import { Response } from "../../../codes";
 import { ProfileMainScene } from '../../../scenes/profile/main';
 
 

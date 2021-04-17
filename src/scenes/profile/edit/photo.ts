@@ -1,8 +1,8 @@
-import { Keyboard, PhotoAttachment } from "vk-io";
-import { bot, users } from "../../..";
 import User from "../../../controllers/user.controller";
 import Frame from "../../../frame";
 import { ProfileMainScene } from "../../../scenes/profile/main";
+import { Keyboard, PhotoAttachment } from "vk-io";
+import { bot, users } from "../../..";
 
 
 export default new Frame(

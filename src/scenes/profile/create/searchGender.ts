@@ -1,6 +1,7 @@
-import { Keyboard } from "vk-io";
-import { bot } from "../..";
-import Frame from "../../frame";
+import { Keyboard } from 'vk-io';
+
+import { bot } from '../../..';
+import Frame from '../../../frame';
 
 
 export default new Frame(

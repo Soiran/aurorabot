@@ -1,9 +1,10 @@
-import { Keyboard } from "vk-io";
-import { bot } from "../../..";
-import { Response } from "../../../codes";
-import GeoController from "../../../controllers/geo.controller";
-import Frame from "../../../frame";
-import geoValidator from "../../../validators/profile/geo";
+import { Keyboard } from 'vk-io';
+
+import { bot } from '../../..';
+import { Response } from '../../../codes';
+import GeoController from '../../../controllers/geo.controller';
+import Frame from '../../../frame';
+import geoValidator from '../../../validators/profile/geo';
 
 
 export default new Frame(

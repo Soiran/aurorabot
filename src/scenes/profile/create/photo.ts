@@ -1,7 +1,7 @@
-import { Keyboard, PhotoAttachment } from "vk-io";
-import { bot } from "../../..";
-import User from "../../../controllers/user.controller";
-import Frame from "../../../frame";
+import { Keyboard, PhotoAttachment } from 'vk-io';
+
+import { bot } from '../../..';
+import Frame from '../../../frame';
 
 
 export default new Frame(

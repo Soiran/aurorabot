@@ -1,6 +1,8 @@
-import { Keyboard } from "vk-io";
-import { bot } from "../../..";
+import User from "../../../controllers/user.controller";
 import Frame from "../../../frame";
+import { ProfileMainScene } from "../../../scenes/profile/main";
+import { Keyboard } from "vk-io";
+import { bot, users } from "../../..";
 
 
 export default new Frame(
@@ -25,13 +27,14 @@ export default new Frame(
     },
     (message, scene) => {
         let gender = message.messagePayload?.gender;
+        let profileController = new User(scene.user.id).profile;
         if (gender === undefined) {
             scene.retry({
                 phrase: 'Пожалуйста, укажи свой пол.'
             });
             return;
         }
-        scene.payload.gender = gender;
-        scene.next();
+        profileController.edit({ gender: gender });
+        users[scene.user.id].setScene(ProfileMainScene());
     }
 );

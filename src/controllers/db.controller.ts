@@ -1,5 +1,6 @@
-import Logger from '../utils/cl';
 import { Client, Result } from 'pg';
+
+import Logger from '../utils/cl';
 
 
 export default class DBController {

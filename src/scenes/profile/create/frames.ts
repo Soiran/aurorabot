@@ -5,6 +5,7 @@ import geoFrame from './geo';
 import nameFrame from './name';
 import photoFrame from './photo';
 import saveFrame from './save';
+import searchGenderFrame from './searchGender';
 import tagsFrame from './tags';
 
 
@@ -12,6 +13,7 @@ export {
     ageFrame,
     descriptionFrame,
     genderFrame,
+    searchGenderFrame,
     geoFrame,
     nameFrame,
     photoFrame,
