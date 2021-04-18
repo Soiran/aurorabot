@@ -1,8 +1,8 @@
 import { Keyboard } from 'vk-io';
 
 import { bot } from '../../..';
-import Frame from '../../../frame';
-import Scene from '../../../scene';
+import Frame from '../../../models/frame';
+import Scene from '../../../models/scene';
 import { searchGenderFrame, searchModeFrame } from './frames';
 
 

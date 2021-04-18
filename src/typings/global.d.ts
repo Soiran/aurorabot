@@ -1,4 +1,4 @@
-export declare type Profile = {
+export type Profile = {
     id: number,
     created: number,
     last_edit: number,
@@ -21,7 +21,7 @@ export declare type Profile = {
     search_mode: number
 };
 
-export declare type ProfileRender = {
+export type ProfileRender = {
     id: number,
     created: number,
     last_edit: number,
@@ -40,7 +40,7 @@ export declare type ProfileRender = {
     search_mode: number
 };
 
-export declare type ProfileUpdate = {
+export type ProfileUpdate = {
     last_edit?: number,
     last_active?: number,
     status?: number,
@@ -61,7 +61,7 @@ export declare type ProfileUpdate = {
     search_mode?: number
 };
 
-export declare type City = {
+export type City = {
     exists: boolean,
     name?: string,
     latitude?: number,

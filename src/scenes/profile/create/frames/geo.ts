@@ -3,7 +3,7 @@ import { Keyboard } from 'vk-io';
 import { bot } from '../../../..';
 import { Response } from '../../../../codes';
 import GeoController from '../../../../controllers/geo.controller';
-import Frame from '../../../../frame';
+import Frame from '../../../../models/frame';
 import geoValidator from '../../../../validators/profile/geo';
 
 

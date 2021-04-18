@@ -1,4 +1,5 @@
-import Scene from '../scene';
+import Scene from '../models/scene';
+import { Profile } from '../typings/global';
 import ProfileController from './profile.controller';
 
 
@@ -6,6 +7,7 @@ export default class User {
     public id: number;
     public profile: ProfileController;
     public scene: Scene;
+    public searchStack: Profile[];
 
     
     constructor(id: number) {

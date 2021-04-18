@@ -4,7 +4,7 @@ import { bot, users } from '../../../..';
 import { Response } from '../../../../codes';
 import GeoController from '../../../../controllers/geo.controller';
 import User from '../../../../controllers/user.controller';
-import Frame from '../../../../frame';
+import Frame from '../../../../models/frame';
 import geoValidator from '../../../../validators/profile/geo';
 import ProfileMainScene from '../../main';
 

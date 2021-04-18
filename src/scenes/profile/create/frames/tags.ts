@@ -2,7 +2,7 @@ import { Keyboard } from 'vk-io';
 
 import { bot } from '../../../..';
 import { Response } from '../../../../codes';
-import Frame from '../../../../frame';
+import Frame from '../../../../models/frame';
 import tagsValidator from '../../../../validators/profile/tags';
 
 

@@ -1,8 +1,8 @@
 import { Keyboard } from 'vk-io';
 
 import { bot, users } from '../../..';
-import Frame from '../../../frame';
-import Scene from '../../../scene';
+import Frame from '../../../models/frame';
+import Scene from '../../../models/scene';
 import ProfileMainScene from '../main';
 import {
     ageFrame,

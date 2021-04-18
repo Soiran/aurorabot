@@ -1,7 +1,7 @@
 import { Keyboard } from 'vk-io';
 
 import { bot } from '../../../..';
-import Frame from '../../../../frame';
+import Frame from '../../../../models/frame';
 
 export default new Frame(
     async (scene, options) => {

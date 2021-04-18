@@ -2,7 +2,7 @@ import { Keyboard } from 'vk-io';
 
 import { bot, users } from '../../../..';
 import User from '../../../../controllers/user.controller';
-import Frame from '../../../../frame';
+import Frame from '../../../../models/frame';
 
 
 export default new Frame(

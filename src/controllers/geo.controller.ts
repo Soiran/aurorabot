@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { City } from '../types';
+import { City } from '../typings/global';
 
 
 export default class GeoController {

@@ -1,12 +1,12 @@
-/**
- * Main file; Entry point to the PostgreSQL & VK API. 
- */
 import * as config from './config';
 import DBController from './controllers/db.controller';
 import User from './controllers/user.controller';
 import VKController from './controllers/vk.controller';
 import { StartScene } from './scenes/start';
 
+/**
+ * Main file; Entry point to the PostgreSQL & VK API. 
+ */
 
 
 export let users = {} as any; 

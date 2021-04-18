@@ -1,4 +1,4 @@
-import { Response } from './../../codes';
+import { Response } from '../../codes';
 
 
 export default function ageValidator(age: string): Response {

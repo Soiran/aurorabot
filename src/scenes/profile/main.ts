@@ -2,8 +2,8 @@ import { Keyboard } from 'vk-io';
 
 import { bot, users } from '../..';
 import User from '../../controllers/user.controller';
-import Frame from '../../frame';
-import Scene from '../../scene';
+import Frame from '../../models/frame';
+import Scene from '../../models/scene';
 import SearchSettingsScene from '../search/settings';
 import ProfileCreateScene from './create';
 import ProfileSettingsScene from './settings';

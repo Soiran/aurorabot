@@ -1,7 +1,7 @@
 import { Keyboard } from 'vk-io';
 
 import { bot, users } from '../../../..';
-import Frame from '../../../../frame';
+import Frame from '../../../../models/frame';
 import ProfileMainScene from '../../../profile/main';
 
 
