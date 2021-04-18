@@ -1,10 +1,9 @@
-import User from "../../../controllers/user.controller";
-import Frame from "../../../frame";
-import descriptionValidator from '../../../validators/profile/description';
-import { Keyboard } from "vk-io";
-import { bot, users } from "../../..";
-import { Response } from "../../../codes";
-import { ProfileMainScene } from '../../../scenes/profile/main';
+import { Keyboard } from 'vk-io';
+
+import { bot } from '../../../..';
+import { Response } from '../../../../codes';
+import Frame from '../../../../frame';
+import descriptionValidator from '../../../../validators/profile/description';
 
 
 export default new Frame(
@@ -25,7 +24,10 @@ export default new Frame(
         let description = message.text;
         let leaveCurrent = message.messagePayload;
         let response = descriptionValidator(description);
-        let profileController = new User(scene.user.id).profile;
+        if (leaveCurrent) {
+            scene.next();
+            return;
+        }
         if (response === Response.NO_VALUE) {
             scene.retry({
                 phrase: 'Пожалуйста, расскажи о себе.'
@@ -35,10 +37,8 @@ export default new Frame(
                 phrase: 'Длина описание не должна быть меньше трёх и больше 512 символов в длину.'
             });
         } else if (response === Response.VALID) {
-            profileController.edit({ description: description });
-        }
-        if (leaveCurrent || response === Response.VALID) {
-            users[scene.user.id].setScene(ProfileMainScene());
+            scene.payload.description = description;
+            scene.next();
         }
     }
 );

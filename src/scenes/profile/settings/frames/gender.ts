@@ -1,8 +1,9 @@
-import User from "../../../controllers/user.controller";
-import Frame from "../../../frame";
-import { ProfileMainScene } from "../../../scenes/profile/main";
-import { Keyboard } from "vk-io";
-import { bot, users } from "../../..";
+import { Keyboard } from 'vk-io';
+
+import { bot, users } from '../../../..';
+import User from '../../../../controllers/user.controller';
+import Frame from '../../../../frame';
+import ProfileMainScene from '../../main';
 
 
 export default new Frame(

@@ -1,17 +1,13 @@
-import { bot, users } from '../../..';
-import User from '../../../controllers/user.controller';
-import Frame from '../../../frame';
-import ProfileMainScene from '../../../scenes/profile/main';
-import { Profile } from '../../../types';
+import { users } from '../../../..';
+import User from '../../../../controllers/user.controller';
+import Frame from '../../../../frame';
+import ProfileMainScene from '../../../../scenes/profile/main';
+import { Profile } from '../../../../types';
 
 
 export default new Frame(
     async (scene) => {
         let controller = new User(scene.user.id);
-        bot.sendMessage({
-            peer_id: scene.user.id,
-            text: 'Сохраняю твою анкету...'
-        });
         let now = new Date().getTime();
         let profile: Profile = {
             id: scene.user.id,

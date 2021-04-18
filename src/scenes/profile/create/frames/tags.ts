@@ -1,9 +1,9 @@
 import { Keyboard } from 'vk-io';
 
-import { bot } from '../../..';
-import { Response } from '../../../codes';
-import Frame from '../../../frame';
-import tagsValidator from '../../../validators/profile/tags';
+import { bot } from '../../../..';
+import { Response } from '../../../../codes';
+import Frame from '../../../../frame';
+import tagsValidator from '../../../../validators/profile/tags';
 
 
 export default new Frame(

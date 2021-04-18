@@ -1,8 +1,7 @@
-import User from "../../../controllers/user.controller";
-import Frame from "../../../frame";
-import { ProfileMainScene } from "../../../scenes/profile/main";
-import { Keyboard, PhotoAttachment } from "vk-io";
-import { bot, users } from "../../..";
+import { Keyboard, PhotoAttachment } from 'vk-io';
+
+import { bot } from '../../../..';
+import Frame from '../../../../frame';
 
 
 export default new Frame(
@@ -27,7 +26,6 @@ export default new Frame(
         });
     },
     async (message, scene) => {
-        let profileController = new User(scene.user.id).profile;
         let photos: any[] = message.attachments.filter(a => a instanceof PhotoAttachment);
         let payload = message.messagePayload;
         let photoUrl: string;
@@ -40,7 +38,6 @@ export default new Frame(
                 scene.retry({
                     phrase: 'Упс... На данный момент у твоего профиля нет фото, поэтому лучше отправить фото сообщением.'
                 });
-                return;
             } else {
                 photoUrl = response.photo_max_orig;
             }
@@ -57,9 +54,10 @@ export default new Frame(
             }
         }
         if (photoUrl) {
+            message.send('Подожди немного...');
             let attachment: PhotoAttachment = await bot.uploadPhoto(photoUrl);
-            profileController.edit({ photo_id: attachment.toString() });
+            scene.payload.photo_id = attachment.toString();
         }
-        users[scene.user.id].setScene(ProfileMainScene());
+        scene.next();
     }
 );

@@ -1,10 +1,11 @@
-import User from "../../../controllers/user.controller";
-import Frame from "../../../frame";
-import ageValidator from '../../../validators/profile/age';
-import { Keyboard } from "vk-io";
-import { bot, users } from "../../..";
-import { Response } from "../../../codes";
-import { ProfileMainScene } from "../../../scenes/profile/main";
+import { Keyboard } from 'vk-io';
+
+import { bot, users } from '../../../..';
+import { Response } from '../../../../codes';
+import User from '../../../../controllers/user.controller';
+import Frame from '../../../../frame';
+import ageValidator from '../../../../validators/profile/age';
+import ProfileMainScene from '../../main';
 
 
 export default new Frame(

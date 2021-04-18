@@ -4,8 +4,9 @@ import { bot, users } from '../..';
 import User from '../../controllers/user.controller';
 import Frame from '../../frame';
 import Scene from '../../scene';
+import SearchSettingsScene from '../search/settings';
 import ProfileCreateScene from './create';
-import ProfileEditScene from './edit';
+import ProfileSettingsScene from './settings';
 
 
 export default function ProfileMainScene(payload?) {
@@ -21,7 +22,7 @@ export default function ProfileMainScene(payload?) {
             });
             bot.sendMessage({
                 peer_id: scene.user.id,
-                message: '1 - Продолжить поиск\n2 - Редактировать\n3 - Настройки поиска\n4 - Заполнить анкету заного',
+                message: '1 - Продолжить поиск\n2 - Настроить анкету\n3 - Настроить поиск\n4 - Заполнить анкету заного',
                 keyboard: Keyboard.builder()
                 .textButton({
                     label: '1',
@@ -33,7 +34,7 @@ export default function ProfileMainScene(payload?) {
                 .textButton({
                     label: '2',
                     payload: {
-                        scene: 'profileEdit'
+                        scene: 'profileSettings'
                     },
                     color: Keyboard.SECONDARY_COLOR
                 })
@@ -61,8 +62,11 @@ export default function ProfileMainScene(payload?) {
                     case 'profileCreate':
                         users[scene.user.id].setScene(ProfileCreateScene(await scene.payload.profileController.data()));
                         break;
-                    case 'profileEdit':
-                        users[scene.user.id].setScene(ProfileEditScene(await scene.payload.profileController.data()));
+                    case 'profileSettings':
+                        users[scene.user.id].setScene(ProfileSettingsScene(await scene.payload.profileController.data()));
+                        break;
+                    case 'searchSettings':
+                        users[scene.user.id].setScene(SearchSettingsScene(await scene.payload.profileController.data()));
                         break;
                 }
             } else {

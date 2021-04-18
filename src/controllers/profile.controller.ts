@@ -40,7 +40,10 @@ export default class ProfileController {
             renderString += `Лайков: ${profileData.likes}\n`;
             renderString += `Репортов: ${profileData.reports}\n\n`;
         }
-        if (profileData.anonymous && !revealAnonymous) {
+        if (profileData.anonymous && this.id === viewer.id) {
+            renderString += `🏴 Включен режим анонимности\n`;
+        }
+        if (profileData.anonymous && !revealAnonymous && !(this.id === viewer.id)) {
             renderString += `🏴 Аноним\n`;
         } else {
             renderString += `${profileData.gender ? (profileData.gender > 1 ? '🏳️' : '🙍‍') : '🙍‍♂‍'} ${profileData.name}, ${declineAge(profileData.age)}, ${distance ? declineDistance(distance) : profileData.city}\n`;
