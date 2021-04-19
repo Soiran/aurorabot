@@ -1,10 +1,10 @@
 import { Keyboard } from 'vk-io';
 
 import { bot } from '../../../..';
-import { Response } from '../../../../codes';
 import GeoController from '../../../../controllers/geo.controller';
 import Frame from '../../../../models/frame';
 import geoValidator from '../../../../validators/profile/geo';
+import { Response } from './../../../../typings/global';
 
 
 export default new Frame(
@@ -22,32 +22,34 @@ export default new Frame(
     async (message, scene) => {
         let cityName = message.text;
         let geo = message.geo;
-        let response = await geoValidator(cityName, geo);
-        if (response === Response.NO_VALUE) {
+        let city = await GeoController.search(cityName);
+        let response = await geoValidator(geo, city);
+        
+        if (response === Response.UNKNOWN_LOCATION) {
+            scene.retry({
+                phrase: 'Не могу определить город на данной карте. Попробуй еще раз.'
+            });
+        } else if (response === Response.UNKNOWN_CITY) {
+            scene.retry({
+                phrase: 'Не могу найти такой город. Попробуй еще раз.'
+            });
+        } else if (response === Response.NO_VALUE) {
             scene.retry();
+        } else if (response === Response.VALID_LOCATION ) {
+            city = await GeoController.search(geo.place.city);
+            scene.payload.city = geo.place.city;
+            scene.payload.latitude = geo.coordinates.latitude;
+            scene.payload.longitude = geo.coordinates.longitude;
+            scene.payload.city_latitude = city.latitude;
+            scene.payload.city_longitude = city.longitude;
+            scene.next();
         } else if (response === Response.VALID_CITY) {
-            let city = await GeoController.search(cityName);
-            scene.payload.geo = {
-                coordinates: {
-                    latitude: +city.latitude,
-                    longitude: +city.longitude
-                },
-                place: {
-                    city: city.name
-                }
-            }
+            scene.payload.city = city.name;
+            scene.payload.latitude = null;
+            scene.payload.longitude = null;
+            scene.payload.city_latitude = city.latitude;
+            scene.payload.city_longitude = city.longitude;
             scene.next();
-        } else if (response === Response.NOT_FOUND) {
-            scene.retry({
-                phrase: 'Данного города не существует, попробуй еще раз.'
-            });
-        } else if (response === Response.VALID_LOCATION) {
-            scene.payload.geo = geo;
-            scene.next();
-        } else if (response === Response.UNKNOWN_LOCATION) {
-            scene.retry({
-                phrase: 'Не могу определить адрес данного местоположения.'
-            });
         }
     }
 );

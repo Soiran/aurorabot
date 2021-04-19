@@ -4,6 +4,7 @@ import genderFrame from './gender';
 import geoFrame from './geo';
 import nameFrame from './name';
 import photoFrame from './photo';
+import relationshipsFrame from './relationships';
 import saveFrame from './save';
 import searchGenderFrame from './searchGender';
 import tagsFrame from './tags';
@@ -18,5 +19,6 @@ export {
     nameFrame,
     photoFrame,
     saveFrame,
-    tagsFrame
+    tagsFrame,
+    relationshipsFrame
 };

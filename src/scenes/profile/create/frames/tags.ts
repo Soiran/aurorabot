@@ -1,9 +1,9 @@
 import { Keyboard } from 'vk-io';
 
 import { bot } from '../../../..';
-import { Response } from '../../../../codes';
 import Frame from '../../../../models/frame';
 import tagsValidator from '../../../../validators/profile/tags';
+import { Response } from './../../../../typings/global';
 
 
 export default new Frame(
@@ -18,7 +18,7 @@ export default new Frame(
         bot.sendMessage({
             message: options?.phrase || 'В добавок к твоему описанию помогут теги, строго определяющие твои предрасположенности и интересы. Укажи их через пробел.',
             peer_id: scene.user.id,
-            keyboard: scene.payload?.description ? keyboard.textButton({
+            keyboard: scene.payload?.tags ? keyboard.textButton({
                 label: 'Оставить текущие',
                 payload: {
                    leaveCurrent: true

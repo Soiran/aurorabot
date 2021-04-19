@@ -11,12 +11,15 @@ export type Profile = {
     tags: string[],
     description: string,
     city: string,
-    latitude: number,
-    longitude: number,
+    latitude: number | null,
+    longitude: number | null,
+    city_latitude: number,
+    city_longitude: number,
     photo_id: string,
     likes: number,
     reports: number,
     gender: number,
+    relationships: boolean,
     search_gender: number,
     search_mode: number
 };
@@ -36,6 +39,7 @@ export type ProfileRender = {
     likes: number,
     reports: number,
     gender: number,
+    relationships: boolean,
     search_gender: number,
     search_mode: number
 };
@@ -53,10 +57,13 @@ export type ProfileUpdate = {
     city?: string,
     latitude?: number,
     longitude?: number,
+    city_latitude?: number,
+    city_longitude?: number,
     photo_id?: string,
     likes?: number,
     reports?: number,
     gender?: number,
+    relationships?: boolean,
     search_gender?: number,
     search_mode?: number
 };
@@ -67,3 +74,19 @@ export type City = {
     latitude?: number,
     longitude?: number
 }
+
+export enum Response {
+    VALID,
+    VALID_CITY,
+    VALID_LOCATION,
+    UNKNOWN_LOCATION,
+    UNKNOWN_CITY,
+    NO_VALUE,
+    TOO_LONG,
+    TOO_SHORT,
+    OUT_OF_RANGE,
+    FORBIDDEN_SYMBOLS,
+    UNKNOWN,
+    NOT_VALID,
+    INCORRECT
+};

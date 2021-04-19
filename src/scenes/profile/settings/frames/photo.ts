@@ -16,7 +16,7 @@ export default new Frame(
             color: Keyboard.SECONDARY_COLOR
         }).oneTime();
         bot.sendMessage({
-            message: options?.phrase || 'Ну и напоследок, самое главное - отправь мне фото для своей анкеты.',
+            message: options?.phrase || 'Отправь мне новое фото для своей анкеты.',
             peer_id: scene.user.id,
             keyboard: scene.payload?.photo_id ? keyboard.textButton({
                 label: 'Оставить текущую',

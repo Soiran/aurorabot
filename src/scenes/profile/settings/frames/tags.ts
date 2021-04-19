@@ -1,11 +1,11 @@
 import { Keyboard } from 'vk-io';
 
 import { bot, users } from '../../../..';
-import { Response } from '../../../../codes';
 import User from '../../../../controllers/user.controller';
 import Frame from '../../../../models/frame';
 import tagsValidator from '../../../../validators/profile/tags';
 import ProfileMainScene from '../../main';
+import { Response } from './../../../../typings/global';
 
 
 export default new Frame(

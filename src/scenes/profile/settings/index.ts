@@ -3,18 +3,9 @@ import { Keyboard } from 'vk-io';
 import { bot, users } from '../../..';
 import Frame from '../../../models/frame';
 import Scene from '../../../models/scene';
+import { relationshipsFrame } from '../create/frames';
 import ProfileMainScene from '../main';
-import {
-    ageFrame,
-    anonymousFrame,
-    descriptionFrame,
-    genderFrame,
-    geoFrame,
-    nameFrame,
-    photoFrame,
-    statusFrame,
-    tagsFrame,
-} from './frames';
+import { ageFrame, anonymousFrame, descriptionFrame, geoFrame, photoFrame, statusFrame, tagsFrame } from './frames';
 
 
 export default function ProfileSettingsScene(payload?) {
@@ -22,7 +13,7 @@ export default function ProfileSettingsScene(payload?) {
         async scene => {
             bot.sendMessage({
                 peer_id: scene.user.id,
-                message: 'Здесь ты можешь настроить свою анкету так, как тебе нужно, лишний раз не заполняя её полностью.\n1 - Имя\n2 - Пол\n3 - Возраст\n4 - Местоположение\n5 - Описание\n6 - Теги\n7 - Фотография\n8 - Режим анонимности\n9 - Отключить анкету',
+                message: 'Здесь ты можешь настроить свою анкету так, как тебе нужно, лишний раз не заполняя её полностью.1 - Возраст\n2 - Местоположение\n3 - Описание\n4 - Теги\n5 - Фотография\n6 - Режим анонимности\n7 - Семейное положение\n8 - Отключить анкету',
                 keyboard: Keyboard.builder()
                 .textButton({
                     label: '1',
@@ -81,19 +72,12 @@ export default function ProfileSettingsScene(payload?) {
                     color: Keyboard.SECONDARY_COLOR
                 }).row()
                 .textButton({
-                    label: '9',
-                    payload: {
-                        goto: 9
-                    },
-                    color: Keyboard.NEGATIVE_COLOR
-                }).row()
-                .textButton({
                     label: 'Назад',
                     payload: {
                         back: true
                     },
                     color: Keyboard.PRIMARY_COLOR
-                }).inline()
+                }).oneTime()
             })
         },
         async (message, scene) => {
@@ -109,13 +93,12 @@ export default function ProfileSettingsScene(payload?) {
             }
         }
     ))
-    .add(nameFrame)
-    .add(genderFrame)
     .add(ageFrame)
     .add(geoFrame)
     .add(descriptionFrame)
     .add(tagsFrame)
     .add(photoFrame)
     .add(anonymousFrame)
+    .add(relationshipsFrame)
     .add(statusFrame);
 }

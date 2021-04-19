@@ -6,6 +6,7 @@ import {
     geoFrame,
     nameFrame,
     photoFrame,
+    relationshipsFrame,
     saveFrame,
     searchGenderFrame,
     tagsFrame,
@@ -20,6 +21,7 @@ export default function ProfileCreateScene(payload?) {
     .add(geoFrame)
     .add(genderFrame)
     .add(searchGenderFrame)
+    .add(relationshipsFrame)
     .add(descriptionFrame)
     .add(tagsFrame)
     .add(photoFrame)

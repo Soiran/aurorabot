@@ -59,6 +59,10 @@ export default function ProfileMainScene(payload?) {
             if (payload) {
                 scene.end();
                 switch (payload.scene) {
+                    case 'search':
+                        message.send('Алгоритм поиска еще в разработке. Спасибо за альфа-тестирование!');
+                        scene.retry();
+                        break;
                     case 'profileCreate':
                         users[scene.user.id].setScene(ProfileCreateScene(await scene.payload.profileController.data()));
                         break;
