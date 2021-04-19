@@ -1,3 +1,4 @@
+
 export type Profile = {
     id: number,
     created: number,
@@ -88,5 +89,17 @@ export enum Response {
     FORBIDDEN_SYMBOLS,
     UNKNOWN,
     NOT_VALID,
-    INCORRECT
+    INCORRECT,
+    EMPTY
+};
+
+export type StorageHeap<T> = {
+    [key: string]: T
+};
+
+export type ParsedProfileString = {
+    name: string,
+    age: number,
+    city: string,
+    description: string
 };

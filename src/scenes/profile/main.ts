@@ -4,6 +4,7 @@ import { bot, users } from '../..';
 import User from '../../controllers/user.controller';
 import Frame from '../../models/frame';
 import Scene from '../../models/scene';
+import SearchMainScene from '../search/main';
 import SearchSettingsScene from '../search/settings';
 import ProfileCreateScene from './create';
 import ProfileSettingsScene from './settings';
@@ -60,17 +61,16 @@ export default function ProfileMainScene(payload?) {
                 scene.end();
                 switch (payload.scene) {
                     case 'search':
-                        message.send('Алгоритм поиска еще в разработке. Спасибо за альфа-тестирование!');
-                        scene.retry();
+                        users.get(scene.user.id.toString()).setScene(SearchMainScene(await scene.payload.profileController.data()));
                         break;
                     case 'profileCreate':
-                        users[scene.user.id].setScene(ProfileCreateScene(await scene.payload.profileController.data()));
+                        users.get(scene.user.id.toString()).setScene(ProfileCreateScene(await scene.payload.profileController.data()));
                         break;
                     case 'profileSettings':
-                        users[scene.user.id].setScene(ProfileSettingsScene(await scene.payload.profileController.data()));
+                        users.get(scene.user.id.toString()).setScene(ProfileSettingsScene(await scene.payload.profileController.data()));
                         break;
                     case 'searchSettings':
-                        users[scene.user.id].setScene(SearchSettingsScene(await scene.payload.profileController.data()));
+                        users.get(scene.user.id.toString()).setScene(SearchSettingsScene(await scene.payload.profileController.data()));
                         break;
                 }
             } else {

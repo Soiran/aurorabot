@@ -28,7 +28,7 @@ export default new Frame(
             scene.retry();
         } else {
             profileController.edit({ anonymous: !scene.payload?.anonymous });
-            users[scene.user.id].setScene(ProfileMainScene());
+            users.get(scene.user.id.toString()).setScene(ProfileMainScene());
         }
     }
 );

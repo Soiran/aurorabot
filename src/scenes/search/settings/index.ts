@@ -40,7 +40,7 @@ export default function SearchSettingsScene(payload?) {
             let payload = message.messagePayload;
             if (payload) {
                 if (payload.back) {
-                    users[scene.user.id].setScene(ProfileMainScene());
+                    users.get(scene.user.id.toString()).setScene(ProfileMainScene());
                 } else {
                     scene.goto(payload.goto);
                 }

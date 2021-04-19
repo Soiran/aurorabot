@@ -13,7 +13,7 @@ export default function ProfileSettingsScene(payload?) {
         async scene => {
             bot.sendMessage({
                 peer_id: scene.user.id,
-                message: 'Здесь ты можешь настроить свою анкету так, как тебе нужно, лишний раз не заполняя её полностью.1 - Возраст\n2 - Местоположение\n3 - Описание\n4 - Теги\n5 - Фотография\n6 - Режим анонимности\n7 - Семейное положение\n8 - Отключить анкету',
+                message: 'Здесь ты можешь настроить свою анкету так, как тебе нужно, лишний раз не заполняя её полностью.\n1 - Возраст\n2 - Местоположение\n3 - Описание\n4 - Теги\n5 - Фотография\n6 - Режим анонимности\n7 - Семейное положение\n8 - Отключить анкету',
                 keyboard: Keyboard.builder()
                 .textButton({
                     label: '1',
@@ -84,7 +84,7 @@ export default function ProfileSettingsScene(payload?) {
             let payload = message.messagePayload;
             if (payload) {
                 if (payload.back) {
-                    users[scene.user.id].setScene(ProfileMainScene());
+                    users.get(scene.user.id.toString()).setScene(ProfileMainScene());
                 } else {
                     scene.goto(payload.goto);
                 }

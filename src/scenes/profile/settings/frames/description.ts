@@ -39,7 +39,7 @@ export default new Frame(
             profileController.edit({ description: description });
         }
         if (leaveCurrent || response === Response.VALID) {
-            users[scene.user.id].setScene(ProfileMainScene());
+            users.get(scene.user.id.toString()).setScene(ProfileMainScene());
         }
     }
 );

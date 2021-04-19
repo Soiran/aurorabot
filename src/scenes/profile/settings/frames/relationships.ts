@@ -32,6 +32,6 @@ export default new Frame(
             return;
         }
         profileController.edit({ relationships: relationships });
-        users[scene.user.id].setScene(ProfileMainScene());
+        users.get(scene.user.id.toString()).setScene(ProfileMainScene());
     }
 );

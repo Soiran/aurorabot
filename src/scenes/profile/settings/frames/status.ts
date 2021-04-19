@@ -25,7 +25,7 @@ export default new Frame(
         } else {
             profileController.edit({ status: 1 });
             scene.end();
-            delete users[scene.user.id];
+            delete users.heap[scene.user.id.toString()];
             message.send('Твоя анкета отключена, надеюсь скоро увидимся!');
         }
     }

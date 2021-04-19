@@ -19,7 +19,7 @@ export default new Frame(
             age: scene.payload.age,
             tags: scene.payload.tags,
             description: scene.payload.description,
-            city: scene.payload.geo?.place?.city || 'Мир',
+            city: scene.payload.city,
             latitude: scene.payload.latitude,
             longitude: scene.payload.longitude,
             city_latitude: scene.payload.city_latitude,
@@ -36,6 +36,6 @@ export default new Frame(
         };
         await controller.profile.update(profile);
         scene.end();
-        users[scene.user.id].setScene(ProfileMainScene());
+        users.get(scene.user.id.toString()).setScene(ProfileMainScene());
     }
 );

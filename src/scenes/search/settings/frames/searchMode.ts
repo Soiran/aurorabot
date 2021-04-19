@@ -31,7 +31,7 @@ export default new Frame(
             scene.retry();
         } else {
             profileController.edit({ search_mode: searchMode });
-            users[scene.user.id].setScene(ProfileMainScene());
+            users.get(scene.user.id.toString()).setScene(ProfileMainScene());
         }
     }
 );

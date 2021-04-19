@@ -34,7 +34,7 @@ export default new Frame(
             });
         } else {
             profileController.edit({ search_gender: searchGender });
-            users[scene.user.id].setScene(ProfileMainScene());
+            users.get(scene.user.id.toString()).setScene(ProfileMainScene());
         }
     }
 );

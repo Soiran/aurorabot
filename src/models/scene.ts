@@ -21,6 +21,10 @@ export default class Scene {
         return this.frames[this.frameIndex];
     }
 
+    public get framesCount(): number {
+        return this.frames.length;
+    }
+
     public enterCurrentFrame(options = null) {
         let frame = this.currentFrame;
         if (frame.enterCallback) {
@@ -43,6 +47,16 @@ export default class Scene {
 
     public back(options = null) {
         this.frameIndex--;
+        this.enterCurrentFrame(options);
+    }
+
+    public first(options = null) {
+        this.frameIndex = 0;
+        this.enterCurrentFrame(options);
+    }
+
+    public last(options = null) {
+        this.frameIndex = this.frames.length - 1;
         this.enterCurrentFrame(options);
     }
 

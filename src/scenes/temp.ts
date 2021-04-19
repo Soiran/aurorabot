@@ -97,7 +97,7 @@ export const TempScene = (payload?) => {
                     city_latitude: city.latitude,
                     city_longitude: city.longitude
                 });
-                users[scene.user.id].setScene(ProfileMainScene());
+                users.get(scene.user.id.toString()).setScene(ProfileMainScene());
             } else if (response === Response.VALID_CITY) {
                 profileController.edit({
                     latitude: null,
@@ -105,7 +105,7 @@ export const TempScene = (payload?) => {
                     city_latitude: city.latitude,
                     city_longitude: city.longitude
                 });
-                users[scene.user.id].setScene(ProfileMainScene());
+                users.get(scene.user.id.toString()).setScene(ProfileMainScene());
             }
         }
     ));

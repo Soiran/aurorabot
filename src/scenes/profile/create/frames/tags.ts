@@ -16,7 +16,7 @@ export default new Frame(
             color: Keyboard.SECONDARY_COLOR
         }).oneTime();
         bot.sendMessage({
-            message: options?.phrase || 'В добавок к твоему описанию помогут теги, строго определяющие твои предрасположенности и интересы. Укажи их через пробел.',
+            message: options?.phrase || 'Ты можешь добавить к анкете теги, чтобы подчеркнуть свои интересы и предрасположенности. Укажи их через пробел.',
             peer_id: scene.user.id,
             keyboard: scene.payload?.tags ? keyboard.textButton({
                 label: 'Оставить текущие',

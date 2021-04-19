@@ -61,6 +61,6 @@ export default new Frame(
             let attachment: PhotoAttachment = await bot.uploadPhoto(photoUrl);
             profileController.edit({ photo_id: attachment.toString() });
         }
-        users[scene.user.id].setScene(ProfileMainScene());
+        users.get(scene.user.id.toString()).setScene(ProfileMainScene());
     }
 );

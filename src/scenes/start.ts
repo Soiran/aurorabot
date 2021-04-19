@@ -82,9 +82,9 @@ export const StartScene = (payload?) => {
                 return;
             }
             if (scene.payload.created) {
-                users[scene.user.id].setScene(ProfileMainScene());
+                users.get(scene.user.id.toString()).setScene(ProfileMainScene());
             } else {
-                users[scene.user.id].setScene(ProfileCreateScene());
+                users.get(scene.user.id.toString()).setScene(ProfileCreateScene());
             }
         }
     ));

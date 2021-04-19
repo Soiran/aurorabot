@@ -18,7 +18,7 @@ export default new Frame(
             color: Keyboard.SECONDARY_COLOR
         }).oneTime();
         bot.sendMessage({
-            message: options?.phrase || 'В добавок к твоему описанию помогут теги, строго определяющие твои предрасположенности и интересы. Укажи их через пробел.',
+            message: options?.phrase || 'Укажи новые теги через пробел.',
             peer_id: scene.user.id,
             keyboard: scene.payload?.description ? keyboard.textButton({
                 label: 'Оставить текущие',
@@ -42,20 +42,21 @@ export default new Frame(
                 scene.retry({
                     phrase: 'Пожалуйста, укажи теги через пробел.'
                 });
+                return;
             } else if (response === Response.OUT_OF_RANGE) {
                 scene.retry({
                     phrase: 'Максимальное количество тегов, которых ты можешь указать - 16.'
                 });
+                return;
             } else if (response === Response.INCORRECT) {
                 scene.retry({
                     phrase: 'Теги могут содержать только буквы и цифры, будьте внимательны.'
                 });
+                return;
             } else if (response === Response.VALID) {
                 profileController.edit({ tags: tags });
             }
         }
-        if (payload?.withoutTags || payload?.leaveCurrent || Response.VALID) {
-            users[scene.user.id].setScene(ProfileMainScene());
-        }
+        users.get(scene.user.id.toString()).setScene(ProfileMainScene());
     }
 );

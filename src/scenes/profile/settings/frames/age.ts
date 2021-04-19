@@ -33,7 +33,7 @@ export default new Frame(
             });
         } else if (response === Response.VALID) {
             profileController.edit({ age: parseInt(age) })
-            users[scene.user.id].setScene(ProfileMainScene());
+            users.get(scene.user.id.toString()).setScene(ProfileMainScene());
         }
     }
 );
