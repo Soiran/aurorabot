@@ -9,21 +9,38 @@ export default class Storage<T> {
         this.heap = {} as StorageHeap<T>;
     }
 
-
-    public push(key: string, value: T) {
-        this.heap[key] = value;
+    public get size() {
+        return Object.keys(this.heap).length;
     }
 
-    public drop(key: string) {
-        delete this.heap[key];
+    public get last() {
+        return this.heap[Object.keys(this.heap).reverse()[0]];
     }
 
-    public exists(key: string): boolean {
-        return !!this.heap[key];
+    public pop() {
+        let temp = this.heap[Object.keys(this.heap).reverse()[0]];
+        delete this.heap[Object.keys(this.heap).reverse()[0]];
+        return temp;
     }
 
-    public get(key: string): T {
-        return this.heap[key];
+    public wipe() {
+        this.heap = {} as StorageHeap<T>;
+    }
+
+    public set(key: string | number, value: T) {
+        this.heap[typeof key === 'string' ? key : key + ''] = value;
+    }
+
+    public delete(key: string | number) {
+        delete this.heap[typeof key === 'string' ? key : key + ''];
+    }
+
+    public has(key: string | number): boolean {
+        return !!this.heap[typeof key === 'string' ? key : key + ''];
+    }
+
+    public get(key: string | number): T {
+        return this.heap[typeof key === 'string' ? key : key + ''];
     }
 
     public select(conditionCallback: (value: T) => boolean) {

@@ -20,7 +20,7 @@ db.connect(async () => {
     let ids = response.map(r => r.id);
     for (let id of ids) {
         let controller: User = new User(parseInt(id));
-        users.push(id, controller);
+        users.set(id, controller);
     }
 });
 
@@ -28,11 +28,12 @@ db.connect(async () => {
  * Main listener.
  */
 
+
 bot.updates.on('message_new', async context => {
-    let userId = context.peerId.toString();
-    let controller: User = users.get(userId) || new User(parseInt(userId));
-    if (!users.exists(userId)) {
-        users.push(userId, controller);
+    let userId = context.peerId;
+    let controller: User = users.get(userId) || new User(userId);
+    if (!users.has(userId)) {
+        users.set(userId, controller);
         controller.setScene(StartScene());
     } else {
         if (!controller.scene) {

@@ -46,7 +46,7 @@ export default class ProfileController {
         if (profileData.anonymous && !revealAnonymous && !(this.id === viewer.id)) {
             renderString += `🏴 Аноним\n`;
         } else {
-            renderString += `${profileData.gender ? (profileData.gender > 1 ? '🏳️' : '🙍‍') : '🙍‍♂‍'} ${profileData.name}, ${declineAge(profileData.age)}, ${distance ? declineDistance(distance) : profileData.city}\n`;
+            renderString += `${profileData.relationships ? '💞' : ''}${profileData.gender ? (profileData.gender > 1 ? '🏳️' : '🙍‍') : '🙍‍♂‍'} ${profileData.name}, ${declineAge(profileData.age)}, ${distance ? declineDistance(distance) : profileData.city}\n`;
         }
         renderString += `${profileData.description}\n`;
         renderString += profileData.tags.map(t => '#' + t).join(', ');

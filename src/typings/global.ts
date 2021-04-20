@@ -1,3 +1,4 @@
+import User from '../controllers/user.controller';
 
 export type Profile = {
     id: number,
@@ -92,6 +93,18 @@ export enum Response {
     INCORRECT,
     EMPTY
 };
+
+export enum Relation {
+    STRANGER,
+    LIKED,
+    MUTUAL
+};
+
+export type SearchResult = {
+    found: boolean
+    relation?: Relation,
+    user?: User
+}
 
 export type StorageHeap<T> = {
     [key: string]: T
