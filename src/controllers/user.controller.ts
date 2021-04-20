@@ -29,7 +29,6 @@ export default class User {
         this.profile = new ProfileController(this.id);
         this.searchStack = new Storage<User>();
         this.viewStack = new Storage<User>();
-        this.likedStack = new Storage<User>();
         this.mutualStack = new Storage<User>();
     }
 
