@@ -48,12 +48,26 @@ export default class ProfileController {
         } else {
             renderString += `${profileData.relationships ? '💞' : ''}${profileData.gender ? (profileData.gender > 1 ? '🏳️' : '🙍‍') : '🙍‍♂‍'} ${profileData.name}, ${declineAge(profileData.age)}, ${distance ? declineDistance(distance) : profileData.city}\n`;
         }
-        renderString += `${profileData.description}\n`;
-        renderString += profileData.tags.map(t => '#' + t).join(', ');
+        if (profileData.description) {
+            renderString += `${profileData.description}\n`;
+        }
+        if (profileData.tags) {
+            renderString += profileData.tags.map(t => '#' + t).join(', ');
+        }
         return {
             text: renderString,
             photo: profileData.photo_id
         };
+    }
+
+    public async banned(): Promise<boolean> {
+        if (await this.exists()) {
+            let data = await this.data();
+            if (!data.status) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public async exists(): Promise<boolean> {
