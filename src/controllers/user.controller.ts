@@ -49,12 +49,12 @@ export default class User {
         let targetUser: User;
         let relation: Relation;
         //
-        if (this.viewStack.size) {
-            targetUser = this.viewStack.last;
-            relation = Relation.LIKED;
-        } else if (this.mutualStack.size) {
+        if (this.mutualStack.size) {
             targetUser = this.mutualStack.last;
             relation = Relation.MUTUAL;
+        } else if (this.viewStack.size) {
+            targetUser = this.viewStack.last;
+            relation = Relation.LIKED;
         } else {
             let filtered = users.select(user => user.id !== this.id && !this.searchStack.has(user.id) && !this.likedStack.has(user.id));
             if (!filtered.length) {
