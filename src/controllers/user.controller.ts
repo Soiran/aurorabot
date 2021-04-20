@@ -1,5 +1,3 @@
-import { Keyboard } from 'vk-io';
-
 import { bot, users } from '..';
 import Scene from '../models/scene';
 import Storage from '../models/storage';
@@ -22,6 +20,7 @@ export default class User {
     public viewStack: Storage<User>;
     public likedStack: Storage<User>;
     public mutualStack: Storage<User>;
+    public messagesStack: Storage<string>;
 
     
     constructor(id: number) {
@@ -31,6 +30,7 @@ export default class User {
         this.viewStack = new Storage<User>();
         this.likedStack = new Storage<User>();
         this.mutualStack = new Storage<User>();
+        this.messagesStack = new Storage<string>();
     }
 
     public async exists(): Promise<boolean> {
@@ -48,6 +48,7 @@ export default class User {
         let profile = this.profile;
         let targetUser: User;
         let relation: Relation;
+        let message: string;
         //
         if (this.mutualStack.size) {
             targetUser = this.mutualStack.last;
@@ -55,13 +56,17 @@ export default class User {
         } else if (this.viewStack.size) {
             targetUser = this.viewStack.last;
             relation = Relation.LIKED;
+            if (this.messagesStack.has(targetUser.id)) {
+                message = this.messagesStack.get(targetUser.id);
+                this.messagesStack.delete(targetUser.id);
+            }
         } else {
             let filtered = users.select(user => user.id !== this.id && !this.searchStack.has(user.id) && !this.likedStack.has(user.id));
             if (!filtered.length) {
                 return { found: false };
             }
             targetUser = filtered[ Math.floor(Math.random() * filtered.length) ];
-            while (targetUser.scene?.name === 'ProfileSettings') {
+            while (targetUser.scene?.name === 'ProfileSettings' || targetUser.scene?.name === 'SearchSettings') {
                 targetUser = filtered[ Math.floor(Math.random() * filtered.length) ];
             }
             relation = Relation.STRANGER;
@@ -74,36 +79,29 @@ export default class User {
         return {
             found: true,
             relation: relation,
-            user: targetUser
+            user: targetUser,
+            message: message
         };
     }
 
     public async viewRequest(requester: User) {
         this.viewStack.set(requester.id, requester);
-        if (this.scene?.name === 'SearchMain' || this.scene?.name === 'ProfileMain') {
+        if (!(requester.scene?.name === 'ProfileSettings' || requester.scene?.name === 'SearchSettings')) {
             let count = this.viewStack.size + this.mutualStack.size;
             bot.sendMessage({
                 peer_id: this.id,
-                message: count === 1 ? `Ты понравился кое-кому 🥰` : `Ты понравился ${count} ${declineLikes(count)} 🥰`,
-                keyboard: Keyboard.builder().textButton({
-                    label: '👍',
-                    color: Keyboard.POSITIVE_COLOR
-                })
+                message: count === 1 ? `Ты понравился кое-кому 🥰` : `Ты понравился ${count} ${declineLikes(count)} 🥰`
             });
         }
     }
 
     public async mutualRequest(requester: User) {
         this.mutualStack.set(requester.id, requester);
-        if (this.scene?.name === 'SearchMain') {
+        if (!(requester.scene?.name === 'ProfileSettings' || requester.scene?.name === 'SearchSettings')) {
             let count = this.viewStack.size + this.mutualStack.size;
             bot.sendMessage({
                 peer_id: this.id,
-                message: count === 1 ? `Кое-кто ответил тебе взаимностью 🥰` : `${count} ${declineLikes(count)} ответили тебе взаимностью 🥰`,
-                keyboard: Keyboard.builder().textButton({
-                    label: '👍',
-                    color: Keyboard.POSITIVE_COLOR
-                })
+                message: count === 1 ? `Кое-кто ответил тебе взаимностью 🥰` : `${count} ${declineLikes(count)} ответили тебе взаимностью 🥰`
             });
         }
     }

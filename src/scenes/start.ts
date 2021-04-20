@@ -3,8 +3,8 @@ import { Keyboard } from 'vk-io';
 import { bot, db, users } from '..';
 import Frame from '../models/frame';
 import Scene from '../models/scene';
+import MenuScene from './menu';
 import ProfileCreateScene from './profile/create';
-import ProfileMainScene from './profile/main';
 
 
 /**
@@ -82,7 +82,7 @@ export default function StartScene(payload?) {
                 return;
             }
             if (scene.payload.created) {
-                users.get(scene.user.id.toString()).setScene(ProfileMainScene());
+                users.get(scene.user.id.toString()).setScene(MenuScene());
             } else {
                 users.get(scene.user.id.toString()).setScene(ProfileCreateScene({ gotoMenu: true }));
             }

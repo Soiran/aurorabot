@@ -1,4 +1,4 @@
-import { Keyboard } from 'vk-io';
+import { Keyboard, KeyboardBuilder } from 'vk-io';
 
 import { bot } from '../..';
 import calculateDistance from '../../../lib/distance';
@@ -7,6 +7,7 @@ import Frame from '../../models/frame';
 import Scene from '../../models/scene';
 import { Relation } from '../../typings/global';
 import MenuScene from '../menu';
+import MessageScene from './message';
 
 
 export default function SearchMainScene(payload?) {
@@ -27,22 +28,50 @@ export default function SearchMainScene(payload?) {
                     })
                 })
             } else {
-                let standartKeyboard = Keyboard.builder()
-                .textButton({
-                    label: '❤',
-                    payload: { like: true },
-                    color: Keyboard.POSITIVE_COLOR
-                })
-                .textButton({
-                    label: '👎🏻',
-                    payload: { dislike: true },
-                    color: Keyboard.NEGATIVE_COLOR
-                })
-                .textButton({
-                    label: '😴',
-                    payload: { menu: true },
-                    color: Keyboard.SECONDARY_COLOR
-                });
+                let standartKeyboard: KeyboardBuilder;
+                if (result.relation === Relation.STRANGER) {
+                    standartKeyboard = Keyboard.builder()
+                    .textButton({
+                        label: '❤',
+                        payload: { like: true },
+                        color: Keyboard.POSITIVE_COLOR
+                    }).textButton({
+                        label: '✍🏻',
+                        payload: { message: true },
+                        color: Keyboard.POSITIVE_COLOR
+                    })
+                    .textButton({
+                        label: '👎🏻',
+                        payload: { dislike: true },
+                        color: Keyboard.NEGATIVE_COLOR
+                    })
+                    .textButton({
+                        label: '😴',
+                        payload: { menu: true },
+                        color: Keyboard.SECONDARY_COLOR
+                    });
+                } else {
+                    standartKeyboard = Keyboard.builder()
+                    .textButton({
+                        label: '❤',
+                        payload: { like: true },
+                        color: Keyboard.POSITIVE_COLOR
+                    }).textButton({
+                        label: '✍🏻',
+                        payload: { message: true },
+                        color: Keyboard.POSITIVE_COLOR
+                    })
+                    .textButton({
+                        label: '👎🏻',
+                        payload: { dislike: true },
+                        color: Keyboard.NEGATIVE_COLOR
+                    })
+                    .textButton({
+                        label: '😴',
+                        payload: { menu: true },
+                        color: Keyboard.SECONDARY_COLOR
+                    });
+                }
                 let foundProfile = await result.user.profile.data();
                 let distance = userProfile.latitude && foundProfile.latitude ? calculateDistance(
                     userProfile.latitude,
@@ -61,7 +90,7 @@ export default function SearchMainScene(payload?) {
                 } else if (result.relation === Relation.LIKED) {
                     bot.sendMessage({
                         peer_id: user.id,
-                        message: `Этому человеку понравилась твоя анкета:\n\n${render.text}`,
+                        message: `Этому человеку понравилась твоя анкета:\n\n${render.text}${result.message ? `\n\n✉️: ${result.message}`: ''}`,
                         attachment: render.photo,
                         keyboard: standartKeyboard
                     });
@@ -102,6 +131,9 @@ export default function SearchMainScene(payload?) {
                     scene.user.likedStack.set(found.id, found);
                     found.viewRequest(scene.user);
                 }
+            } else if (payload?.message) {
+                scene.user.setScene(MessageScene({ found: found }));
+                return;
             } else if (payload?.menu) {
                 scene.user.setScene(MenuScene(scene.payload));
                 return;

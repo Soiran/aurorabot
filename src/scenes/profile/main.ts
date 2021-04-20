@@ -24,7 +24,7 @@ export default function ProfileMainScene(payload?) {
             });
             bot.sendMessage({
                 peer_id: scene.user.id,
-                message: '1 - Продолжить поиск\n2 - Настроить анкету\n3 - Настроить поиск\n4 - Зона отдыха\n5 - Заполнить анкету заного',
+                message: '1 - Смотреть анкеты\n2 - Настроить анкету\n3 - Настроить поиск\n4 - Зона отдыха\n5 - Заполнить анкету заного',
                 keyboard: Keyboard.builder()
                 .textButton({
                     label: '1',

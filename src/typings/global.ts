@@ -103,7 +103,8 @@ export enum Relation {
 export type SearchResult = {
     found: boolean
     relation?: Relation,
-    user?: User
+    user?: User,
+    message?: string
 }
 
 export type StorageHeap<T> = {
