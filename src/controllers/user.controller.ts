@@ -1,9 +1,17 @@
-import { users } from '..';
+import { Keyboard } from 'vk-io';
+
+import { bot, users } from '..';
 import Scene from '../models/scene';
 import Storage from '../models/storage';
-import ViewPendingScene from '../scenes/search/viewpending';
 import { Relation, SearchResult } from '../typings/global';
 import ProfileController from './profile.controller';
+
+
+const declineLikes = (count: number): string => {
+    let s = count.toString();
+    let l = parseInt(s[s.length - 1]);
+    return l === 1 ? 'человеку' : 'людям';
+}
 
 
 export default class User {
@@ -12,6 +20,7 @@ export default class User {
     public scene: Scene;
     public searchStack: Storage<User>;
     public viewStack: Storage<User>;
+    public likedStack: Storage<User>;
     public mutualStack: Storage<User>;
 
     
@@ -20,6 +29,7 @@ export default class User {
         this.profile = new ProfileController(this.id);
         this.searchStack = new Storage<User>();
         this.viewStack = new Storage<User>();
+        this.likedStack = new Storage<User>();
         this.mutualStack = new Storage<User>();
     }
 
@@ -46,15 +56,18 @@ export default class User {
             targetUser = this.mutualStack.last;
             relation = Relation.MUTUAL;
         } else {
-            let filtered = users.select(user => user.id !== this.id && !this.searchStack.has(user.id.toString()));
+            let filtered = users.select(user => user.id !== this.id && !this.searchStack.has(user.id) && !this.likedStack.has(user.id));
             if (!filtered.length) {
                 return { found: false };
             }
             targetUser = filtered[ Math.floor(Math.random() * filtered.length) ];
+            while (targetUser.scene?.name === 'ProfileSettings') {
+                targetUser = filtered[ Math.floor(Math.random() * filtered.length) ];
+            }
             relation = Relation.STRANGER;
         }
         //
-        if (this.searchStack.size > 10) {
+        if (this.searchStack.size > (users.size / 2)) {
             this.searchStack.wipe();
         }
         this.searchStack.set(targetUser.id.toString(), targetUser);
@@ -67,11 +80,31 @@ export default class User {
 
     public async viewRequest(requester: User) {
         this.viewStack.set(requester.id, requester);
-        this.setScene(ViewPendingScene());
+        if (this.scene?.name === 'SearchMain' || this.scene?.name === 'ProfileMain') {
+            let count = this.viewStack.size + this.mutualStack.size;
+            bot.sendMessage({
+                peer_id: this.id,
+                message: count === 1 ? `Ты понравился кое-кому 🥰` : `Ты понравился ${count} ${declineLikes(count)} 🥰`,
+                keyboard: Keyboard.builder().textButton({
+                    label: '👍',
+                    color: Keyboard.POSITIVE_COLOR
+                })
+            });
+        }
     }
 
     public async mutualRequest(requester: User) {
         this.mutualStack.set(requester.id, requester);
-        this.setScene(ViewPendingScene());
+        if (this.scene?.name === 'SearchMain') {
+            let count = this.viewStack.size + this.mutualStack.size;
+            bot.sendMessage({
+                peer_id: this.id,
+                message: count === 1 ? `Кое-кто ответил тебе взаимностью 🥰` : `${count} ${declineLikes(count)} ответили тебе взаимностью 🥰`,
+                keyboard: Keyboard.builder().textButton({
+                    label: '👍',
+                    color: Keyboard.POSITIVE_COLOR
+                })
+            });
+        }
     }
 }
