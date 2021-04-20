@@ -39,7 +39,7 @@ export default class VKController {
     public async sendMessage(params: MessagesSendParams) {
         await this.api.messages.send(Object.assign(params, {
             random_id: Math.floor(Math.random() * 25012005)
-        }));
+        })).catch(rej => this.logger.log(rej, 'error'));
     }
 
     public async uploadPhoto(value: UploadSourceValue): Promise<PhotoAttachment> {
