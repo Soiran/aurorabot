@@ -1,6 +1,6 @@
 import { Keyboard } from 'vk-io';
 
-import { bot, users } from '../../..';
+import { bot } from '../../..';
 import Frame from '../../../models/frame';
 import Scene from '../../../models/scene';
 import ProfileMainScene from '../../profile/main';
@@ -40,7 +40,7 @@ export default function SearchSettingsScene(payload?) {
             let payload = message.messagePayload;
             if (payload) {
                 if (payload.back) {
-                    users.get(scene.user.id.toString()).setScene(ProfileMainScene());
+                    scene.user.setScene(ProfileMainScene());
                 } else {
                     scene.goto(payload.goto);
                 }

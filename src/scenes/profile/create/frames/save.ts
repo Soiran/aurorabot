@@ -1,8 +1,8 @@
-import { users } from '../../../..';
 import User from '../../../../controllers/user.controller';
 import Frame from '../../../../models/frame';
 import ProfileMainScene from '../../../../scenes/profile/main';
 import { Profile } from '../../../../typings/global';
+import MenuScene from '../../../menu';
 
 
 export default new Frame(
@@ -36,6 +36,10 @@ export default new Frame(
         };
         await controller.profile.update(profile);
         scene.end();
-        users.get(scene.user.id.toString()).setScene(ProfileMainScene());
+        if (scene.payload.gotoMenu) {
+            scene.user.setScene(MenuScene());
+        } else {
+            scene.user.setScene(ProfileMainScene());
+        }
     }
 );

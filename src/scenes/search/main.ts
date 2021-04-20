@@ -27,7 +27,6 @@ export default function SearchMainScene(payload?) {
                     })
                 })
             } else {
-                console.log(result);
                 let standartKeyboard = Keyboard.builder()
                 .textButton({
                     label: '❤',
