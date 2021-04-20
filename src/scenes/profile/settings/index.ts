@@ -9,7 +9,7 @@ import { ageFrame, anonymousFrame, descriptionFrame, geoFrame, photoFrame, statu
 
 
 export default function ProfileSettingsScene(payload?) {
-    return new Scene(payload).add(new Frame(
+    return new Scene('ProfileSettings', payload).add(new Frame(
         async scene => {
             bot.sendMessage({
                 peer_id: scene.user.id,

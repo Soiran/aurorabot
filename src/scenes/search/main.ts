@@ -6,11 +6,11 @@ import User from '../../controllers/user.controller';
 import Frame from '../../models/frame';
 import Scene from '../../models/scene';
 import { Relation } from '../../typings/global';
-import ProfileMainScene from '../profile/main';
+import MenuScene from '../menu';
 
 
 export default function SearchMainScene(payload?) {
-    return new Scene(payload).add(new Frame(
+    return new Scene('SearchMain', payload).add(new Frame(
         async scene => {
             let user = scene.user;
             let userProfile = scene.payload;
@@ -27,6 +27,7 @@ export default function SearchMainScene(payload?) {
                     })
                 })
             } else {
+                console.log(result);
                 let standartKeyboard = Keyboard.builder()
                 .textButton({
                     label: '❤',
@@ -39,8 +40,8 @@ export default function SearchMainScene(payload?) {
                     color: Keyboard.NEGATIVE_COLOR
                 })
                 .textButton({
-                    label: 'Моя анкета',
-                    payload: { back: true },
+                    label: '😴',
+                    payload: { menu: true },
                     color: Keyboard.SECONDARY_COLOR
                 });
                 let foundProfile = await result.user.profile.data();
@@ -83,6 +84,10 @@ export default function SearchMainScene(payload?) {
         },
         async (message, scene) => {
             let payload = message.messagePayload;
+            if (payload?.retry) {
+                scene.retry();
+                return;
+            }
             let found: User = scene.payload.found;
             let relation = scene.payload.relation;
             scene.user.viewStack.delete(found.id);
@@ -91,13 +96,15 @@ export default function SearchMainScene(payload?) {
             }
             if (payload?.like) {
                 if (relation === Relation.LIKED) {
+                    found.likedStack.delete(scene.user.id);
                     found.mutualRequest(scene.user);
                     scene.user.mutualStack.set(found.id, found);
                 } else {
+                    scene.user.likedStack.set(found.id, found);
                     found.viewRequest(scene.user);
                 }
-            } else if (payload?.back) {
-                scene.user.setScene(ProfileMainScene(scene.payload));
+            } else if (payload?.menu) {
+                scene.user.setScene(MenuScene(scene.payload));
                 return;
             }
             scene.retry();

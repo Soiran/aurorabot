@@ -11,8 +11,8 @@ import ProfileMainScene from './profile/main';
  * Эта сцена используется как роутинг в случае, если: пользователь впервые пишет
  * боту, пользователь не активен больше двух недель или бот был перезапущен.
  */
-export const StartScene = (payload?) => {
-    return new Scene(payload).add(new Frame(
+export default function StartScene(payload?) {
+    return new Scene('StartScene', payload).add(new Frame(
         async scene => {
             let user = scene.user;
             let profile = user.profile;
@@ -84,7 +84,7 @@ export const StartScene = (payload?) => {
             if (scene.payload.created) {
                 users.get(scene.user.id.toString()).setScene(ProfileMainScene());
             } else {
-                users.get(scene.user.id.toString()).setScene(ProfileCreateScene());
+                users.get(scene.user.id.toString()).setScene(ProfileCreateScene({ gotoMenu: true }));
             }
         }
     ));

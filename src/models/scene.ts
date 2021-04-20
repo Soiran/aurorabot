@@ -5,13 +5,15 @@ import Frame from './frame';
 
 
 export default class Scene {
+    public name: string;
     public user: User;
     public frames: Frame[];
     public frameIndex: number;
     public payload: any;
 
 
-    constructor(payload?: any, frames?: Frame[]) {
+    constructor(name: string, payload?: any, frames?: Frame[]) {
+        this.name = name;
         frames ? this.frames = frames : this.frames = new Array<Frame>();
         payload ? this.payload = payload : this.payload = {};
         this.frameIndex = 0;
@@ -33,7 +35,7 @@ export default class Scene {
     }
 
     public add(frame: Frame) {
-        return new Scene(this.payload, this.frames.concat([ frame ]));
+        return new Scene(this.name, this.payload, this.frames.concat([ frame ]));
     }
 
     public listenMessage(message: MessageContext) {

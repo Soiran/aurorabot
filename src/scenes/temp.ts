@@ -14,7 +14,7 @@ import ProfileMainScene from './profile/main';
  * Временная сцена для заполнения новых полей.
  */
 export const TempScene = (payload?) => {
-    return new Scene(payload).add(new Frame(
+    return new Scene('TempScene', payload).add(new Frame(
         async scene => {
             let response = await bot.api.users.get({
                 user_id: scene.user.id

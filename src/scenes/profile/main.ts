@@ -1,9 +1,10 @@
 import { Keyboard } from 'vk-io';
 
-import { bot, users } from '../..';
+import { bot } from '../..';
 import User from '../../controllers/user.controller';
 import Frame from '../../models/frame';
 import Scene from '../../models/scene';
+import MenuScene from '../menu';
 import SearchMainScene from '../search/main';
 import SearchSettingsScene from '../search/settings';
 import ProfileCreateScene from './create';
@@ -11,7 +12,7 @@ import ProfileSettingsScene from './settings';
 
 
 export default function ProfileMainScene(payload?) {
-    return new Scene(payload).add(new Frame(
+    return new Scene('ProfileMain', payload).add(new Frame(
         async scene => {
             let profileController = await new User(scene.user.id).profile;
             let render = await profileController.render(profileController, null, true);
@@ -23,7 +24,7 @@ export default function ProfileMainScene(payload?) {
             });
             bot.sendMessage({
                 peer_id: scene.user.id,
-                message: '1 - Продолжить поиск\n2 - Настроить анкету\n3 - Настроить поиск\n4 - Заполнить анкету заного',
+                message: '1 - Продолжить поиск\n2 - Настроить анкету\n3 - Настроить поиск\n4 - Зона отдыха\n5 - Заполнить анкету заного',
                 keyboard: Keyboard.builder()
                 .textButton({
                     label: '1',
@@ -31,7 +32,7 @@ export default function ProfileMainScene(payload?) {
                         scene: 'search'
                     },
                     color: Keyboard.POSITIVE_COLOR
-                })
+                }).row()
                 .textButton({
                     label: '2',
                     payload: {
@@ -49,6 +50,12 @@ export default function ProfileMainScene(payload?) {
                 .textButton({
                     label: '4',
                     payload: {
+                        scene: 'menu'
+                    },
+                    color: Keyboard.PRIMARY_COLOR
+                }).textButton({
+                    label: '5',
+                    payload: {
                         scene: 'profileCreate'
                     },
                     color: Keyboard.NEGATIVE_COLOR
@@ -60,17 +67,20 @@ export default function ProfileMainScene(payload?) {
             if (payload) {
                 scene.end();
                 switch (payload.scene) {
+                    case 'menu':
+                        scene.user.setScene(MenuScene(await scene.payload.profileController.data()));
+                        break;
                     case 'search':
-                        users.get(scene.user.id.toString()).setScene(SearchMainScene(await scene.payload.profileController.data()));
+                        scene.user.setScene(SearchMainScene(await scene.payload.profileController.data()));
                         break;
                     case 'profileCreate':
-                        users.get(scene.user.id.toString()).setScene(ProfileCreateScene(await scene.payload.profileController.data()));
+                        scene.user.setScene(ProfileCreateScene(await scene.payload.profileController.data()));
                         break;
                     case 'profileSettings':
-                        users.get(scene.user.id.toString()).setScene(ProfileSettingsScene(await scene.payload.profileController.data()));
+                        scene.user.setScene(ProfileSettingsScene(await scene.payload.profileController.data()));
                         break;
                     case 'searchSettings':
-                        users.get(scene.user.id.toString()).setScene(SearchSettingsScene(await scene.payload.profileController.data()));
+                        scene.user.setScene(SearchSettingsScene(await scene.payload.profileController.data()));
                         break;
                 }
             } else {

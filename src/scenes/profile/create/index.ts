@@ -15,7 +15,7 @@ import {
 
 
 export default function ProfileCreateScene(payload?) {
-    return new Scene(payload)
+    return new Scene('ProfileCreate', payload)
     // .add(new Frame(
     //     async scene => {
     //         bot.sendMessage({
