@@ -16,8 +16,7 @@ export default function StartScene(payload?) {
         async scene => {
             let user = scene.user;
             let profile = user.profile;
-            let exists = await profile.exists();
-            if (exists) {
+            if (user.created) {
                 let data = await profile.data();
                 let status = data.status;
                 if (!status) {
@@ -50,7 +49,6 @@ export default function StartScene(payload?) {
                             color: Keyboard.POSITIVE_COLOR
                         })
                     });
-                    scene.payload.created = true;
                 } else if (status === 2) {
                     bot.sendMessage({
                         message: 'Привет, продолжим искать?',
@@ -60,9 +58,7 @@ export default function StartScene(payload?) {
                             color: Keyboard.POSITIVE_COLOR
                         })
                     });
-                    scene.payload.created = true;
                 }
-                scene.payload.created = true;
             } else {
                 bot.sendMessage({
                     message: 'Привет, я Аврора, твой помощник в поиске людей. Создадим анкету?',
@@ -81,7 +77,7 @@ export default function StartScene(payload?) {
                 message.send('Список активных модераторов:\n' + moderators.map(p => `@id${p.id}`).join('\n'));
                 return;
             }
-            if (scene.payload.created) {
+            if (scene.user.created) {
                 users.get(scene.user.id.toString()).setScene(MenuScene());
             } else {
                 users.get(scene.user.id.toString()).setScene(ProfileCreateScene({ gotoMenu: true }));

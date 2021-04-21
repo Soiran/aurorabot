@@ -16,6 +16,7 @@ db.connect(async () => {
     let ids = response.map(r => r.id);
     for (let id of ids) {
         let controller: User = new User(parseInt(id));
+        controller.created = true;
         if (await controller.profile.banned()) {
             return;
         }
@@ -34,6 +35,7 @@ bot.updates.on('message_new', async context => {
         if (await controller.profile.banned()) {
             return;
         }
+        controller.created = await controller.exists();
         users.set(userId, controller);
         controller.setScene(StartScene());
     } else {

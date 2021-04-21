@@ -13,6 +13,7 @@ const declineLikes = (count: number): string => {
 
 
 export default class User {
+    public created = false;
     public id: number;
     public profile: ProfileController;
     public scene: Scene;
@@ -49,7 +50,7 @@ export default class User {
         let targetUser: User;
         let relation: Relation;
         let message: string;
-        //
+    
         if (this.mutualStack.size) {
             targetUser = this.mutualStack.last;
             relation = Relation.MUTUAL;
@@ -61,7 +62,8 @@ export default class User {
                 this.messagesStack.delete(targetUser.id);
             }
         } else {
-            let filtered = users.select(user => user.id !== this.id && !this.searchStack.has(user.id) && !this.likedStack.has(user.id));
+            // SEARCH ALGORITHM
+            let filtered = users.select(user => user.id !== this.id && user.created && !this.searchStack.has(user.id) && !this.likedStack.has(user.id));
             if (!filtered.length) {
                 return { found: false };
             }
@@ -69,13 +71,13 @@ export default class User {
             while (targetUser.scene?.name === 'ProfileSettings' || targetUser.scene?.name === 'SearchSettings') {
                 targetUser = filtered[ Math.floor(Math.random() * filtered.length) ];
             }
+            // SEARCH ALGORITHM
             relation = Relation.STRANGER;
         }
-        //
         if (this.searchStack.size > (users.size / 2)) {
             this.searchStack.wipe();
         }
-        this.searchStack.set(targetUser.id.toString(), targetUser);
+        this.searchStack.set(targetUser.id, targetUser);
         return {
             found: true,
             relation: relation,

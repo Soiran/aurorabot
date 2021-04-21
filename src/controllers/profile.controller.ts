@@ -86,6 +86,7 @@ export default class ProfileController {
 
     public async data(): Promise<Profile> {
         let response = await db.select('*', 'profile', `id = ${this.id}`);
+        console.log(response);
         return response[0];
     }
 
