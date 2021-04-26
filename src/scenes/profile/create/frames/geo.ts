@@ -24,8 +24,6 @@ export default new Frame(
         let geo = message.geo;
         let city = cityName ? await GeoController.search(cityName) : null;
         let response = await geoValidator(geo, city);
-
-        console.log(geo);
         
         if (response === Response.UNKNOWN_LOCATION) {
             scene.retry({
