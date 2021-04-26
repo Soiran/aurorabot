@@ -1,12 +1,15 @@
-import { StorageHeap } from '../typings/global';
+import Logger from '../../lib/cl';
+import { StackedMapHeap } from '../typings/global';
 
 
-export default class Storage<T> {
-    public heap: StorageHeap<T>
+export default class StackedMap<T> {
+    public logger: Logger;
+    public heap: StackedMapHeap<T>
 
     
-    constructor() {
-        this.heap = {} as StorageHeap<T>;
+    constructor(heap?: StackedMapHeap<T>) {
+        this.heap = heap || {} as StackedMapHeap<T>;
+        this.logger = new Logger('StackedMapModel');
     }
 
     public get size() {
@@ -24,7 +27,7 @@ export default class Storage<T> {
     }
 
     public wipe() {
-        this.heap = {} as StorageHeap<T>;
+        this.heap = {} as StackedMapHeap<T>;
     }
 
     public set(key: string | number, value: T) {
