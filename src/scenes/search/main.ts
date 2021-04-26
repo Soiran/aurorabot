@@ -1,11 +1,11 @@
-import { Keyboard, KeyboardBuilder } from 'vk-io';
+import { Keyboard } from 'vk-io';
 
 import { bot } from '../..';
 import calculateDistance from '../../../lib/distance';
 import User from '../../controllers/user.controller';
 import Frame from '../../models/frame';
 import Scene from '../../models/scene';
-import { Relation } from '../../typings/global';
+import { ProfileView } from '../../typings/global';
 import MenuScene from '../menu';
 import MessageScene from './message';
 
@@ -13,24 +13,29 @@ import MessageScene from './message';
 export default function SearchMainScene(payload?) {
     return new Scene('SearchMain', payload).add(new Frame(
         async scene => {
-            let user = scene.user;
-            let userProfile = scene.payload;
-            let result = await user.search();
-            if (!result.found) {
+            let controller = scene.user;
+            let profile = scene.payload;
+            let searchResult = await controller.search();
+
+            if (!searchResult.found) {
                 bot.sendMessage({
-                    peer_id: user.id,
+                    peer_id: controller.id,
                     message: 'Упс, анкеты закончились! Напиши позже, чтобы найти новых людей.',
-                    keyboard: Keyboard.builder()
-                    .textButton({
-                        label: 'Попробовать еще раз',
+                    keyboard: Keyboard.builder().textButton({
+                        label: 'Посмотреть новые анкеты',
                         payload: { retry: true },
                         color: Keyboard.POSITIVE_COLOR
                     })
-                })
+                });
             } else {
-                let standartKeyboard: KeyboardBuilder;
-                if (result.relation === Relation.STRANGER) {
-                    standartKeyboard = Keyboard.builder()
+                let keyboard = Keyboard.builder().textButton({
+                    label: 'Продолжить',
+                    color: Keyboard.POSITIVE_COLOR
+                });
+                let topText: string;
+                if (searchResult.type === ProfileView.STRANGER) {
+                    topText = '';
+                    keyboard = Keyboard.builder()
                     .textButton({
                         label: '❤',
                         payload: { like: true },
@@ -50,15 +55,12 @@ export default function SearchMainScene(payload?) {
                         payload: { menu: true },
                         color: Keyboard.SECONDARY_COLOR
                     });
-                } else {
-                    standartKeyboard = Keyboard.builder()
+                } else if (searchResult.type === ProfileView.LIKED) {
+                    topText = 'Этому человеку понравилась твоя анкета:\n\n';
+                    keyboard = Keyboard.builder()
                     .textButton({
                         label: '❤',
                         payload: { like: true },
-                        color: Keyboard.POSITIVE_COLOR
-                    }).textButton({
-                        label: '✍🏻',
-                        payload: { message: true },
                         color: Keyboard.POSITIVE_COLOR
                     })
                     .textButton({
@@ -71,43 +73,28 @@ export default function SearchMainScene(payload?) {
                         payload: { menu: true },
                         color: Keyboard.SECONDARY_COLOR
                     });
+                } else if (searchResult.type === ProfileView.MUTUAL) {
+                    topText = `Добавляйся в друзья - vk.com/id${searchResult.controller.id}\nУдачи вам провести время ;)\n\n`;
+                } else if (searchResult.type === ProfileView.REPORT) {
+                    topText = 'Этот человек пожаловался на твою анкету:\n\n';
                 }
-                let foundProfile = await result.user.profile.data();
-                let distance = userProfile.latitude && foundProfile.latitude ? calculateDistance(
-                    userProfile.latitude,
-                    userProfile.longitude,
+
+                let foundProfile = await searchResult.controller.profile.data();
+                let distance = profile.latitude && foundProfile.latitude ? calculateDistance(
+                    profile.latitude,
+                    profile.longitude,
                     foundProfile.latitude,
                     foundProfile.longitude
                 ) : 0;
-                let render = await result.user.profile.render(user.profile, distance);
-                if (result.relation === Relation.STRANGER) {
-                    bot.sendMessage({
-                        peer_id: user.id,
-                        message: render.text,
-                        attachment: render.photo,
-                        keyboard: standartKeyboard
-                    });
-                } else if (result.relation === Relation.LIKED) {
-                    bot.sendMessage({
-                        peer_id: user.id,
-                        message: `Этому человеку понравилась твоя анкета:\n\n${render.text}${result.message ? `\n\n✉️: ${result.message}`: ''}`,
-                        attachment: render.photo,
-                        keyboard: standartKeyboard
-                    });
-                } else if (result.relation === Relation.MUTUAL) {
-                    bot.sendMessage({
-                        peer_id: user.id,
-                        message: `Добавляйся в друзья - vk.com/id${result.user.id}\nУдачи вам провести время ;)\n\n${render.text}`,
-                        attachment: render.photo,
-                        keyboard: Keyboard.builder()
-                        .textButton({
-                            label: 'Продолжить',
-                            color: Keyboard.POSITIVE_COLOR
-                        })
-                    });
-                }
-                scene.payload.found = result.user;
-                scene.payload.relation = result.relation;
+                let render = await searchResult.controller.profile.render(controller.profile, distance);
+                bot.sendMessage({
+                    peer_id: controller.id,
+                    message: topText + render.text,
+                    keyboard: keyboard,
+                    attachment: render.photo
+                })
+
+                scene.payload.searchResult = searchResult;
             }
         },
         async (message, scene) => {
@@ -116,23 +103,11 @@ export default function SearchMainScene(payload?) {
                 scene.retry();
                 return;
             }
-            let found: User = scene.payload.found;
-            let relation = scene.payload.relation;
-            scene.user.viewStack.delete(found.id);
-            if (relation === Relation.MUTUAL) {
-                scene.user.mutualStack.delete(found.id);
-            }
+            let target: User = scene.payload.searchResult.controller;
             if (payload?.like) {
-                if (relation === Relation.LIKED) {
-                    found.likedStack.delete(scene.user.id);
-                    found.mutualRequest(scene.user);
-                    scene.user.mutualStack.set(found.id, found);
-                } else {
-                    scene.user.likedStack.set(found.id, found);
-                    found.viewRequest(scene.user);
-                }
+                scene.user.pick(target);
             } else if (payload?.message) {
-                scene.user.setScene(MessageScene({ found: found }));
+                scene.user.setScene(MessageScene({ found: target }));
                 return;
             } else if (payload?.menu) {
                 scene.user.setScene(MenuScene(scene.payload));

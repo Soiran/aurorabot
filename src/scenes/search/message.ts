@@ -4,7 +4,7 @@ import { bot } from '../..';
 import User from '../../controllers/user.controller';
 import Frame from '../../models/frame';
 import Scene from '../../models/scene';
-import { Response } from '../../typings/global';
+import { ProfileView, Response } from '../../typings/global';
 import messageValidator from '../../validators/search/message';
 import SearchMainScene from './main';
 
@@ -41,9 +41,11 @@ export default function MessageScene(payload?) {
                 });
             } else if (response === Response.VALID) {
                 let found: User = scene.payload.found;
-                scene.user.likedStack.set(found.id, found);
-                found.messagesStack.set(scene.user.id, text);
-                found.viewRequest(scene.user);
+                found.notify({
+                    controller: scene.user,
+                    type: ProfileView.LIKED,
+                    message: text
+                });
                 scene.user.setScene(SearchMainScene(await scene.user.profile.data()));
             }
         }

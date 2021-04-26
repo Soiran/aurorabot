@@ -1,4 +1,6 @@
+import { TimeoutController } from '../../lib/time';
 import User from '../controllers/user.controller';
+
 
 export type Profile = {
     id: number,
@@ -94,20 +96,22 @@ export enum Response {
     EMPTY
 };
 
-export enum Relation {
+export enum ProfileView {
     STRANGER,
     LIKED,
-    MUTUAL
-};
-
-export type SearchResult = {
-    found: boolean
-    relation?: Relation,
-    user?: User,
-    message?: string
+    MUTUAL,
+    REPORT,
+    AD
 }
 
-export type StorageHeap<T> = {
+export type SearchResult = {
+    found: boolean,
+    type?: ProfileView,
+    controller?: User,
+    message?: string
+};
+
+export type StackedMapHeap<T> = {
     [key: string]: T
 };
 
@@ -116,4 +120,20 @@ export type ParsedProfileString = {
     age: number,
     city: string,
     description: string
+};
+
+export type LikedUser = {
+    controller: User,
+    viewedAfter: 0  
+};
+
+export type MutualUser = {
+    controller: User,
+    wipingController: TimeoutController
+};
+
+export type UserNotification = {
+    controller: User,
+    type: ProfileView,
+    message?: string
 };
