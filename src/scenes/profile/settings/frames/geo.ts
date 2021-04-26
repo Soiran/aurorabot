@@ -24,9 +24,10 @@ export default new Frame(
     async (message, scene) => {
         let cityName = message.text;
         let geo = message.geo;
-        let city = await GeoController.search(cityName);
+        let city = cityName ? await GeoController.search(cityName) : null;
         let response = await geoValidator(geo, city);
-        let profileController = new User(scene.user.id).profile;
+        let profileController = new User(scene.user.id).profile;;
+
         if (response === Response.UNKNOWN_LOCATION) {
             scene.retry({
                 phrase: 'Не могу определить город на данной карте. Попробуй еще раз.'
@@ -37,7 +38,7 @@ export default new Frame(
             });
         } else if (response === Response.NO_VALUE) {
             scene.retry();
-        } else if (response === Response.VALID_LOCATION ) {
+        } else if (response === Response.VALID_LOCATION) {
             city = await GeoController.search(geo.place.city);
             profileController.edit({
                 city: geo.place.city,

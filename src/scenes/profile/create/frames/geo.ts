@@ -22,8 +22,10 @@ export default new Frame(
     async (message, scene) => {
         let cityName = message.text;
         let geo = message.geo;
-        let city = await GeoController.search(cityName);
+        let city = cityName ? await GeoController.search(cityName) : null;
         let response = await geoValidator(geo, city);
+
+        console.log(geo);
         
         if (response === Response.UNKNOWN_LOCATION) {
             scene.retry({
@@ -35,7 +37,7 @@ export default new Frame(
             });
         } else if (response === Response.NO_VALUE) {
             scene.retry();
-        } else if (response === Response.VALID_LOCATION ) {
+        } else if (response === Response.VALID_LOCATION) {
             city = await GeoController.search(geo.place.city);
             scene.payload.city = geo.place.city;
             scene.payload.latitude = geo.coordinates.latitude;
