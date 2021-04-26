@@ -81,7 +81,7 @@ export default class User {
             } as SearchResult;
         } else {
             let filtered = users.select(user => {
-                return user.created && !this.viewed.has(user.id) && !this.liked.has(user.id) && !this.mutual.has(user.id);
+                return user.created && user.id !== this.id && !this.viewed.has(user.id) && !this.liked.has(user.id) && !this.mutual.has(user.id);
             });
             if (filtered.length) {
                 target = filtered[ Math.floor(Math.random() * filtered.length) ];
