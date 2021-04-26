@@ -1,12 +1,14 @@
+import sizeof from 'object-sizeof';
+
 import * as config from './config';
 import DBController from './controllers/db.controller';
 import User from './controllers/user.controller';
 import VKController from './controllers/vk.controller';
-import Storage from './models/storage';
+import StackedMap from './models/stackedMap';
 import StartScene from './scenes/start';
 
 
-export let users = new Storage<User>();
+export let users = new StackedMap<User>();
 export const bot = new VKController(config.VKAPI.TOKEN);
 export const db = new DBController(`postgres://${config.DB.USER}:${config.DB.PASSWORD}@${config.DB.IP_ADRESS}:${config.DB.PORT}`);
 
@@ -29,6 +31,7 @@ db.connect(async () => {
  * Main listener.
  */
 bot.updates.on('message_new', async context => {
+    users.logger.log(`Current heap size - ${sizeof(users)} bytes`, 'info');
     let userId = context.peerId;
     let controller: User = users.get(userId) || new User(userId);
     if (!users.has(userId)) {
@@ -45,6 +48,7 @@ bot.updates.on('message_new', async context => {
             controller.scene.listenMessage(context);
         }
     }
+    controller.profile.edit({ last_active: new Date().getTime() });
 });
 
 bot.updates.on('message_deny', async context => {
@@ -55,11 +59,11 @@ bot.updates.on('message_deny', async context => {
     await db.update('profile', {
         status: 0
     }, `id = ${userId}`);
-    Object.values(users.heap).forEach(user => {
-        user.viewStack.delete(userId);
-        user.mutualStack.delete(userId);
-        user.likedStack.delete(userId);
-    });
+    // Object.values(users.heap).forEach(user => {
+    //     user.viewStack.delete(userId);
+    //     user.mutualStack.delete(userId);
+    //     user.likedStack.delete(userId);
+    // });
 })
 
 bot.updates.on('message_allow', context => {

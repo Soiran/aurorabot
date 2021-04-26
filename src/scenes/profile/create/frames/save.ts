@@ -1,4 +1,3 @@
-import User from '../../../../controllers/user.controller';
 import Frame from '../../../../models/frame';
 import ProfileMainScene from '../../../../scenes/profile/main';
 import { Profile } from '../../../../typings/global';
@@ -7,11 +6,11 @@ import MenuScene from '../../../menu';
 
 export default new Frame(
     async (scene) => {
-        let controller = new User(scene.user.id);
+        let controller = scene.user;
         let now = new Date().getTime();
         let profile: Profile = {
             id: scene.user.id,
-            created: now,
+            created: scene.payload.created || now,
             last_edit: now,
             last_active: now,
             status: 2,
@@ -35,6 +34,7 @@ export default new Frame(
             rank: scene.payload.rank || 0
         };
         await controller.profile.update(profile);
+        controller.created = true;
         scene.end();
         if (scene.payload.gotoMenu) {
             scene.user.setScene(MenuScene());
