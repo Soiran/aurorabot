@@ -23,7 +23,7 @@ export default new Frame(
         if (!payload?.disable) {
             scene.retry();
         } else {
-            profileController.edit({ status: 1 });
+            profileController.edit({ status: 1, last_edit: new Date().getTime() });
             scene.end();
             delete users.heap[scene.user.id.toString()];
             message.send('Твоя анкета отключена, надеюсь скоро увидимся!');

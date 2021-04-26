@@ -36,7 +36,7 @@ export default new Frame(
                 phrase: 'Длина описание не должна быть меньше трёх и больше 512 символов в длину.'
             });
         } else if (response === Response.VALID) {
-            profileController.edit({ description: description });
+            profileController.edit({ description: description, last_edit: new Date().getTime() });
         }
         if (leaveCurrent || response === Response.VALID) {
             users.get(scene.user.id.toString()).setScene(ProfileMainScene());

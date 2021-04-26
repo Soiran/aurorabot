@@ -31,7 +31,7 @@ export default new Frame(
             });
             return;
         }
-        profileController.edit({ relationships: relationships });
+        profileController.edit({ relationships: relationships, last_edit: new Date().getTime() });
         users.get(scene.user.id.toString()).setScene(ProfileMainScene());
     }
 );

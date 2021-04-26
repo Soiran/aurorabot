@@ -59,7 +59,7 @@ export default new Frame(
         }
         if (photoUrl) {
             let attachment: PhotoAttachment = await bot.uploadPhoto(photoUrl);
-            profileController.edit({ photo_id: attachment.toString() });
+            profileController.edit({ photo_id: attachment.toString(), last_edit: new Date().getTime() });
         }
         users.get(scene.user.id.toString()).setScene(ProfileMainScene());
     }

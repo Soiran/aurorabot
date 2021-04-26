@@ -44,7 +44,8 @@ export default new Frame(
                 latitude: geo.coordinates.latitude,
                 longitude: geo.coordinates.longitude,
                 city_latitude: city.latitude,
-                city_longitude: city.longitude
+                city_longitude: city.longitude,
+                last_edit: new Date().getTime()
             });
             users.get(scene.user.id.toString()).setScene(ProfileMainScene());
         } else if (response === Response.VALID_CITY) {
@@ -53,7 +54,8 @@ export default new Frame(
                 latitude: null,
                 longitude: null,
                 city_latitude: city.latitude,
-                city_longitude: city.longitude
+                city_longitude: city.longitude,
+                last_edit: new Date().getTime()
             });
             users.get(scene.user.id.toString()).setScene(ProfileMainScene());
         }

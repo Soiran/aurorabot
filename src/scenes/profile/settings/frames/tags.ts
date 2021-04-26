@@ -54,7 +54,7 @@ export default new Frame(
                 });
                 return;
             } else if (response === Response.VALID) {
-                profileController.edit({ tags: tags });
+                profileController.edit({ tags: tags, last_edit: new Date().getTime() });
             }
         }
         users.get(scene.user.id.toString()).setScene(ProfileMainScene());

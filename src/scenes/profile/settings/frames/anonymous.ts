@@ -27,7 +27,7 @@ export default new Frame(
         if (!payload?.toggle) {
             scene.retry();
         } else {
-            profileController.edit({ anonymous: !scene.payload?.anonymous });
+            profileController.edit({ anonymous: !scene.payload?.anonymous, last_edit: new Date().getTime() });
             users.get(scene.user.id.toString()).setScene(ProfileMainScene());
         }
     }

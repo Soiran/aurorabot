@@ -32,7 +32,7 @@ export default new Frame(
                 phrase: 'Возраст должен быть целым положительным числом, отличным от нуля.'
             });
         } else if (response === Response.VALID) {
-            profileController.edit({ age: parseInt(age) })
+            profileController.edit({ age: parseInt(age), last_edit: new Date().getTime() })
             users.get(scene.user.id.toString()).setScene(ProfileMainScene());
         }
     }
