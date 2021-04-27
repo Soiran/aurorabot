@@ -10,7 +10,7 @@ import SearchMainScene from './main';
 
 
 export default function MessageScene(payload?) {
-    return new Scene('ProfileMain', payload).add(new Frame(
+    return new Scene('Message', payload).add(new Frame(
         async scene => {
             bot.sendMessage({
                 peer_id: scene.user.id,

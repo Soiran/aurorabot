@@ -8,7 +8,7 @@ import SearchMainScene from './search/main';
 
 
 export default function MenuScene(payload?) {
-    return new Scene('ProfileMain', payload).add(new Frame(
+    return new Scene('Menu', payload).add(new Frame(
         async scene => {
             bot.sendMessage({
                 peer_id: scene.user.id,
