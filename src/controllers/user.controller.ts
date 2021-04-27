@@ -1,7 +1,9 @@
 import { bot, users } from '..';
 import { IntervalController, TimeoutController } from '../../lib/time';
+import * as config from '../config';
 import Scene from '../models/scene';
 import StackedMap from '../models/StackedMap';
+import NotifyScene from '../scenes/profile/notify';
 import { MutualUser, ProfileView, SearchResult, UserNotification } from '../typings/global';
 import { LikedUser } from './../typings/global';
 import ProfileController from './profile.controller';
@@ -40,6 +42,14 @@ export default class User {
 
     // Shedules
     private viewedWiping: IntervalController;
+    private likesWiping: IntervalController;
+    private reportsWiping: IntervalController;
+    private reportedWiping: IntervalController;
+
+    // Counters
+    private likesCount = 0;
+    private reportsCount = 0;
+    private reportedCount = 0;
     
 
     constructor(id: number) {
@@ -51,15 +61,31 @@ export default class User {
         this.mutual = new StackedMap<MutualUser>();
         this.notifications = new StackedMap<UserNotification>();
 
-        let dayShift = 1000 * 60 * 60 * 24;
-        this.viewedWiping = new IntervalController(dayShift, () => {
+        this.viewedWiping = new IntervalController(config.USER.VIEWED_WIPING_INTERVAL, () => {
             this.viewed.wipe();
+        });
+        this.likesWiping = new IntervalController(config.USER.LIKES_WIPING_INTERVAL, () => {
+            this.likesCount = 0;
+        });
+        this.reportsWiping = new IntervalController(config.USER.REPORTS_WIPING_INTERVAL, () => {
+            this.reportsCount = 0;
+        });
+        this.reportedWiping = new IntervalController(config.USER.REPORTED_WIPING_INTERVAL, () => {
+            this.reportedCount = 0;
         });
     }
 
     public async exists(): Promise<boolean> {
         let response = await this.profile.exists();
         return response;
+    }
+
+    public get canSearch(): boolean {
+        return this.likesCount < config.USER.LIKES_LIMIT;
+    }
+
+    public get canReport(): boolean {
+        return this.reportsCount < config.USER.REPORTS_LIMIT;
     }
 
     public setScene(scene: Scene) {
@@ -110,21 +136,20 @@ export default class User {
         this.mutual.delete(id);
     }
 
-    public setLike(target: User) {
-        this.liked.set(target.id, {
-            controller: target,
+    public setLike(controller: User) {
+        this.liked.set(controller.id, {
+            controller: controller,
             viewedAfter: 0
         });
+        this.likesCount++;
     }
 
-    public setMutual(target: User) {
-        this.removeLike(target.id);
-        target.removeLike(this.id);
-        let monthShift = 1000 * 60 * 60 * 24 * 30;
-        this.mutual.set(target.id, {
-            controller: target,
-            wipingController: new TimeoutController(new Date(new Date().getTime() + monthShift), () => {
-                this.removeMutual(target.id);
+    public setMutual(controller: User) {
+        this.removeLike(controller.id);
+        this.mutual.set(controller.id, {
+            controller: controller,
+            wipingController: new TimeoutController(new Date(new Date().getTime() + config.USER.MUTUAL_WIPING_INTERVAL), () => {
+                this.removeMutual(controller.id);
             })
         });
     }
@@ -132,15 +157,19 @@ export default class User {
     public pick(target: User) {
         let mutual = target.liked.has(this.id);
         if (mutual) {
-            this.setMutual(target);
             target.setMutual(this);
+            this.setMutual(target);
+            this.notify({
+                controller: this,
+                type: ProfileView.MUTUAL
+            });
         } else {
             this.setLike(target);
         }
         target.notify({
             controller: this,
             type: mutual ? ProfileView.MUTUAL : ProfileView.LIKED
-        })
+        });
     }
 
     public notify(notification: UserNotification) {
@@ -149,25 +178,43 @@ export default class User {
         let messageText: string;
         let count: number;
         this.notifications.set(user.id, notification);
-        switch (type) {
-            case ProfileView.LIKED:
-                count = this.notifications.select(e => e.type === ProfileView.LIKED).length;
-                messageText = `Ты понравился ${count} ${declineLikes(count)} 🥰`;
-                break;
-            case ProfileView.MUTUAL:
-                count = this.notifications.select(e => e.type === ProfileView.MUTUAL).length;
-                messageText = `${count} ${declineMutual(count)} тебе взаимностью 🥰`;
-                break;
-            case ProfileView.REPORT:
-                count = this.notifications.select(e => e.type === ProfileView.REPORT).length;
-                messageText = `${count} ${declineReports(count)} на твою анкету ⚠️`;
-                break;
-        }
-        if (!(this.scene?.name === 'ProfileSettings' || this.scene?.name === 'SearchSettings') && messageText) {
-            bot.sendMessage({
-                peer_id: this.id,
-                message: messageText
-            })
+        if (user.id !== this.id) {
+            switch (type) {
+                case ProfileView.LIKED:
+                    count = this.notifications.select(e => e.type === ProfileView.LIKED).length;
+                    messageText = `Ты понравился ${count} ${declineLikes(count)} 🥰`;
+                    break;
+                case ProfileView.MUTUAL:
+                    count = this.notifications.select(e => e.type === ProfileView.MUTUAL).length;
+                    messageText = `${count} ${declineMutual(count)} тебе взаимностью 🥰`;
+                    break;
+                case ProfileView.REPORT:
+                    count = this.notifications.select(e => e.type === ProfileView.REPORT).length;
+                    messageText = `${count} ${declineReports(count)} на твою анкету ⚠️`;
+                    break;
+            }
+            let notDisturbScenes = [
+                'ProfileCreate',
+                'ProfileSettings',
+                'SearchSettings',
+                'Report',
+                'Message',
+                'Notify'
+            ];
+            let interruptScenes = [
+                'ProfileMain',
+                'Menu'
+            ];
+            if (notDisturbScenes.includes(this.scene?.name)) {
+                return;
+            } else if (interruptScenes.includes(this.scene?.name) || !this.scene) {
+                this.setScene(NotifyScene({ message: messageText, last_scene: this.scene }));
+            } else {
+                bot.sendMessage({
+                    peer_id: this.id,
+                    message: messageText
+                });
+            }
         }
     }
 }
