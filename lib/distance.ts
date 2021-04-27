@@ -1,4 +1,4 @@
-const R = 6371000;
+const R = 6371200;
 
 const toRadians = (degrees: number): number => {
     return degrees * Math.PI / 180;
