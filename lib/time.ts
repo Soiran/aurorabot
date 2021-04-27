@@ -1,14 +1,15 @@
 import shedule, { Job } from 'node-schedule';
 
+import { TimeSet } from '../src/typings/global';
 
-interface RepeatTime {
-    second?: number,
-    minute?: number,
-    hour?: number,
-    day?: number,
-    month?: number,
-    year?: number
-};
+
+export function unixTime(timeSet: TimeSet) {
+    return (timeSet.ms || 0) +
+        (timeSet.seconds * 1000 || 0) +
+        (timeSet.minutes * 1000 * 60 || 0) +
+        (timeSet.hours * 1000 * 60 * 60 || 0) +
+        (timeSet.days * 1000 * 60 * 60 * 24 || 0);
+}
 
 
 export class TimeoutController {
