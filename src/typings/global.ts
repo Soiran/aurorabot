@@ -137,3 +137,11 @@ export type UserNotification = {
     type: ProfileView,
     message?: string
 };
+
+export type TimeSet = {
+    ms?: number,
+    seconds?: number,
+    minutes?: number,
+    hours?: number,
+    days?: number
+};
