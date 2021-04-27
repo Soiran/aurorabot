@@ -10,13 +10,19 @@ export default class Scene {
     public frames: Frame[];
     public frameIndex: number;
     public payload: any;
+    private originPayload: any;
 
 
     constructor(name: string, payload?: any, frames?: Frame[]) {
         this.name = name;
         frames ? this.frames = frames : this.frames = new Array<Frame>();
         payload ? this.payload = payload : this.payload = {};
+        payload ? this.originPayload = payload : this.originPayload = {};
         this.frameIndex = 0;
+    }
+
+    public get clone(): Scene {
+        return new Scene(this.name, this.originPayload, this.frames);
     }
 
     public get currentFrame(): Frame {
