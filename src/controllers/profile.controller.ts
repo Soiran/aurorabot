@@ -20,6 +20,7 @@ const declineAge = (age: number): string => {
 
 export default class ProfileController {
     public id: number;
+    public syncedData: Profile;
 
 
     constructor(id: number) {
@@ -77,11 +78,18 @@ export default class ProfileController {
 
     public async init(profile: Profile) {
         await db.insert('profile', profile);
+        this.sync();
     }
 
     public async update(profile: Profile) {
         await db.delete('profile', `id = ${this.id}`);
         await this.init(profile);
+        this.sync();
+    }
+
+    public async sync() {
+        let data = await this.data();
+        this.syncedData = data;
     }
 
     public async data(): Promise<Profile> {
@@ -96,5 +104,6 @@ export default class ProfileController {
 
     public async edit(update: ProfileUpdate) {
         await db.update<ProfileUpdate>('profile', update, `id = ${this.id}`);
+        this.sync();
     }
 };
