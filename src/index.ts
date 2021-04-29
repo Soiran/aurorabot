@@ -48,7 +48,7 @@ bot.updates.on('message_new', async context => {
             controller.scene.listenMessage(context);
         }
     }
-    controller.profile.edit({ last_active: new Date().getTime() });
+    if (controller.created) controller.profile.edit({ last_active: new Date().getTime() });
 });
 
 bot.updates.on('message_deny', async context => {
