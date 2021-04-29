@@ -88,11 +88,7 @@ export default function ReportScene(payload?) {
                 }
             }
             let found: User = scene.payload.found;
-            found.notify({
-                controller: scene.user,
-                type: ProfileView.REPORT,
-                message: reportText
-            });
+            scene.user.report(found, reportText);
             scene.user.setScene(SearchMainScene(await scene.user.profile.data()));
         }
     ));
