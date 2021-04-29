@@ -1,12 +1,13 @@
-import { bot, users } from '..';
-import { IntervalController, TimeoutController } from '../../lib/time';
+import {bot, users} from '..';
+import {IntervalController, TimeoutController} from '../../lib/time';
 import * as config from '../config';
 import Scene from '../models/scene';
 import StackedMap from '../models/StackedMap';
 import NotifyScene from '../scenes/profile/notify';
-import { MutualUser, ProfileView, SearchResult, UserNotification } from '../typings/global';
-import { LikedUser } from './../typings/global';
+import {MutualUser, ProfileView, SearchResult, UserNotification} from '../typings/global';
+import {LikedUser} from './../typings/global';
 import ProfileController from './profile.controller';
+import calculateDistance from "../../lib/distance";
 
 
 const declineLikes = (count: number): string => {
@@ -47,14 +48,15 @@ export default class User {
     private reportedWiping: IntervalController;
 
     // Counters
-    private likesCount = 0;
-    private reportsCount = 0;
-    private reportedCount = 0;
+    public likesCount = 0;
+    public reportsCount = 0;
+    public reportedCount = 0;
     
 
     constructor(id: number) {
         this.id = id;
         this.profile = new ProfileController(this.id);
+        this.profile.sync();
 
         this.viewed = new StackedMap<User>();
         this.liked = new StackedMap<LikedUser>();
@@ -94,6 +96,18 @@ export default class User {
         scene.enterCurrentFrame();
     }
 
+    public distance(target: User): number {
+        if (this.id === target.id) return null;
+        let selfData = this.profile.syncedData;
+        let targetData = target.profile.syncedData;
+        return selfData.latitude && targetData.latitude ? +calculateDistance(
+            selfData.latitude,
+            selfData.longitude,
+            targetData.latitude,
+            targetData.longitude
+        ).toFixed(0) : null;
+    }
+
     public async search(): Promise<SearchResult> {
         let target: User;
 
@@ -106,11 +120,21 @@ export default class User {
                 message: notification.message
             } as SearchResult;
         } else {
+            let searchGender = this.profile.syncedData.search_gender;
             let filtered = users.select(user => {
-                return user.created && user.id !== this.id && !this.viewed.has(user.id) && !this.liked.has(user.id) && !this.mutual.has(user.id);
+                return user.created &&
+                    user.profile.syncedData?.search_gender === searchGender &&
+                    user.id !== this.id && !this.viewed.has(user.id) &&
+                    !this.liked.has(user.id) &&
+                    !this.mutual.has(user.id);
             });
             if (filtered.length) {
-                target = filtered[ Math.floor(Math.random() * filtered.length) ];
+                filtered = filtered.sort((a, b) => {
+                    return +(b.profile.syncedData.city === this.profile.syncedData.city) - +(a.profile.syncedData.city === this.profile.syncedData.city);
+                }).sort((a, b) => {
+                    return this.distance(a) ?? Infinity - this.distance(b) ?? Infinity;
+                });
+                target = filtered[0];
                 setImmediate(() => {
                     this.viewed.set(target.id, target);
                     if (this.viewed.size === 64) {
@@ -128,43 +152,31 @@ export default class User {
         }
     }
 
-    public removeLike(id: number) {
-        this.liked.delete(id);
-    }
-
-    public removeMutual(id: number) {
-        this.mutual.delete(id);
-    }
-
-    public setLike(controller: User) {
-        this.liked.set(controller.id, {
-            controller: controller,
-            viewedAfter: 0
-        });
-        this.likesCount++;
-    }
-
     public setMutual(controller: User) {
-        this.removeLike(controller.id);
+        this.liked.delete(controller.id);
         this.mutual.set(controller.id, {
             controller: controller,
             wipingController: new TimeoutController(new Date(new Date().getTime() + config.USER.MUTUAL_WIPING_INTERVAL), () => {
-                this.removeMutual(controller.id);
+                this.mutual.delete(controller.id);
             })
         });
     }
 
-    public pick(target: User) {
+    public like(target: User) {
         let mutual = target.liked.has(this.id);
         if (mutual) {
             target.setMutual(this);
             this.setMutual(target);
             this.notify({
-                controller: this,
+                controller: target,
                 type: ProfileView.MUTUAL
-            });
+            }, false);
         } else {
-            this.setLike(target);
+            this.liked.set(target.id, {
+                controller: target,
+                viewedAfter: 0
+            });
+            this.likesCount++;
         }
         target.notify({
             controller: this,
@@ -172,13 +184,23 @@ export default class User {
         });
     }
 
-    public notify(notification: UserNotification) {
+    public report(target: User, reportText: string) {
+        target.notify({
+            controller: this,
+            type: ProfileView.REPORT,
+            message: reportText
+        });
+        this.reportsCount++;
+        target.reportedCount++;
+    }
+
+    public notify(notification: UserNotification, message = true) {
         let user = notification.controller;
         let type = notification.type;
         let messageText: string;
         let count: number;
         this.notifications.set(user.id, notification);
-        if (user.id !== this.id) {
+        if (message) {
             switch (type) {
                 case ProfileView.LIKED:
                     count = this.notifications.select(e => e.type === ProfileView.LIKED).length;
