@@ -109,12 +109,7 @@ export default function SearchMainScene(payload?) {
                 }
 
                 let foundProfile = await searchResult.controller.profile.data();
-                let distance = profile.latitude && foundProfile.latitude ? +calculateDistance(
-                    profile.latitude,
-                    profile.longitude,
-                    foundProfile.latitude,
-                    foundProfile.longitude
-                ).toFixed(0) : 0;
+                let distance = controller.distance(searchResult.controller);
                 let render = await searchResult.controller.profile.render(controller.profile, distance);
                 bot.sendMessage({
                     peer_id: controller.id,
@@ -128,11 +123,9 @@ export default function SearchMainScene(payload?) {
         },
         async (message, scene) => {
             let payload = message.messagePayload;
-            let target: User = scene.payload.searchResult.controller;
+            let target: User = scene.payload?.searchResult?.controller;
             if (payload?.like) {
-                scene.retry();
-                scene.user.pick(target);
-                return;
+                await scene.user.like(target);
             } else if (payload?.message) {
                 scene.user.setScene(MessageScene({ found: target }));
                 return;
