@@ -35,7 +35,7 @@
     "object-sizeof": "^1.6.1",
     "pg": "^8.5.1",
     "stringifier": "^2.1.0",
-    "vk-io": "^4.1.4",
+    "vk-io": "^4.2.0",
     "xtend": "^4.0.2"
   },
   "devDependencies": {
