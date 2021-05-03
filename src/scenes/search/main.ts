@@ -108,7 +108,6 @@ export default function SearchMainScene(payload?) {
                     bottomText = `\n\n⚠️: ${searchResult.message}`;
                 }
 
-                let foundProfile = await searchResult.controller.profile.data();
                 let distance = controller.distance(searchResult.controller);
                 let render = await searchResult.controller.profile.render(controller.profile, distance);
                 bot.sendMessage({
