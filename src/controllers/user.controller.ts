@@ -8,6 +8,7 @@ import {MutualUser, ProfileView, SearchResult, UserNotification} from '../typing
 import {LikedUser} from './../typings/global';
 import ProfileController from './profile.controller';
 import calculateDistance from "../../lib/distance";
+import searchAlgorithm from '../logic/search';
 
 
 const declineLikes = (count: number): string => {
@@ -51,6 +52,9 @@ export default class User {
     public likesCount = 0;
     public reportsCount = 0;
     public reportedCount = 0;
+
+    // Flags
+    public profilesOver = false;
     
 
     constructor(id: number) {
@@ -109,8 +113,6 @@ export default class User {
     }
 
     public async search(): Promise<SearchResult> {
-        let target: User;
-
         if (this.notifications.size) {
             let notification = this.notifications.pop();
             return {
@@ -120,35 +122,16 @@ export default class User {
                 message: notification.message
             } as SearchResult;
         } else {
-            let searchGender = this.profile.syncedData.search_gender;
-            let filtered = users.select(user => {
-                return user.created &&
-                    user.profile.syncedData?.search_gender === searchGender &&
-                    user.id !== this.id && !this.viewed.has(user.id) &&
-                    !this.liked.has(user.id) &&
-                    !this.mutual.has(user.id);
-            });
-            if (filtered.length) {
-                filtered = filtered.sort((a, b) => {
-                    return +(b.profile.syncedData.city === this.profile.syncedData.city) - +(a.profile.syncedData.city === this.profile.syncedData.city);
-                }).sort((a, b) => {
-                    return this.distance(a) ?? Infinity - this.distance(b) ?? Infinity;
-                });
-                target = filtered[0];
-                setImmediate(() => {
-                    this.viewed.set(target.id, target);
-                    if (this.viewed.size === 64) {
-                        this.viewed.wipe();
-                    }
-                });
-                return {
-                    found: true,
-                    type: ProfileView.STRANGER,
-                    controller: target
-                } as SearchResult;
-            } else {
-                return { found: false } as SearchResult;
-            }
+            let target = searchAlgorithm(this);
+            if (!target) return { found: false } as SearchResult;
+            this.viewed.set(target.id, target);
+            if (this.viewed.size === 64) this.viewed.wipe();
+            this.profilesOver = false;
+            return {
+                found: true,
+                type: ProfileView.STRANGER,
+                controller: target
+            } as SearchResult;
         }
     }
 
@@ -204,15 +187,15 @@ export default class User {
             switch (type) {
                 case ProfileView.LIKED:
                     count = this.notifications.select(e => e.type === ProfileView.LIKED).length;
-                    messageText = `Ты понравился ${count} ${declineLikes(count)} 🥰`;
+                    messageText = `Ты понравился ${count} ${declineLikes(count)}, смотри в поиске 🥰`;
                     break;
                 case ProfileView.MUTUAL:
                     count = this.notifications.select(e => e.type === ProfileView.MUTUAL).length;
-                    messageText = `${count} ${declineMutual(count)} тебе взаимностью 🥰`;
+                    messageText = `${count} ${declineMutual(count)} тебе взаимностью, смотри в поиске 🥰`;
                     break;
                 case ProfileView.REPORT:
                     count = this.notifications.select(e => e.type === ProfileView.REPORT).length;
-                    messageText = `${count} ${declineReports(count)} на твою анкету ⚠️`;
+                    messageText = `${count} ${declineReports(count)} на твою анкету, смотри в поиске ⚠️`;
                     break;
             }
             let notDisturbScenes = [
@@ -229,7 +212,7 @@ export default class User {
             ];
             if (notDisturbScenes.includes(this.scene?.name)) {
                 return;
-            } else if (interruptScenes.includes(this.scene?.name) || !this.scene) {
+            } else if (interruptScenes.includes(this.scene?.name) || !this.scene || this.profilesOver) {
                 this.setScene(NotifyScene({ message: messageText, last_scene: this.scene }));
             } else {
                 bot.sendMessage({
