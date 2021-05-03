@@ -38,9 +38,11 @@ export default function searchAlgorithm(finder: User): User {
         for (let j = i + 1; j < filtered.length; j++) {
             let distanceA = finder.distance(filtered[i]);
             let distanceB = finder.distance(filtered[j]);
+            let cityA = filtered[i].profile.syncedData.city;
+            let cityB = filtered[j].profile.syncedData.city;
             // Если пользователь не определил точное местоположение, то метод distance выдает null;
             // Это мы также применяем в сортировочном сравнении анкет
-            if (!distanceA || (distanceA > distanceB)) {
+            if (cityA == cityB && (!distanceA || (distanceA > distanceB))) {
                 let tmp = filtered[i];
                 filtered[i] = filtered[j];
                 filtered[j] = tmp;
